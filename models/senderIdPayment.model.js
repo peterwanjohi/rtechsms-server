@@ -1,12 +1,12 @@
+
 'use strict';
 var Temporal = require('sequelize-temporal');
 module.exports = (sequelize, Sequelize) => {
-    const paymentSchema = sequelize.define("subscriptionpayment", {
+    const paymentSchema = sequelize.define("senderidpayment", {
       organization: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-
      amount: {
         type: Sequelize.INTEGER ,
         allowNull: false,
@@ -16,8 +16,12 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATE ,
         allowNull: false,
       },
-     
-      plan: {
+      time: {
+        type: Sequelize.STRING ,
+        allowNull: false,
+      },
+      senderId:
+      {
         type: Sequelize.STRING ,
         allowNull: false,
       },

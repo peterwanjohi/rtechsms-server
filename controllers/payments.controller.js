@@ -4,13 +4,10 @@ const PaymentsModel = db.payments;
 const PlanModel = db.plan;
 const OrganizationModel = db.organization;
 const UnitPaymentsModel = db.unitpayments;
-
-const nodemailer = require("nodemailer");
-
-
+const SenderIdPaymentModel =db.senderidpayments;
+const SenderIdModel = db.sendeidrequests;
 const {calculateNextPayment} = require("../helpers/Helper");
 const mail = require("../services/mail");
-
 
 exports.readController = (req, res) => {
     const organization = req.user.organization;
@@ -64,7 +61,6 @@ exports.paymentController = (req, res) => {
                     date: paydate,
                     time: time,
                     plan:planname,
-                    type: "Subscription",
                     state: "pending"
                 };
 
@@ -140,6 +136,7 @@ exports.updatePaymentStateController = (req, res) => {
             })
         
 };
+
 exports.paymentCancelController =  (req, res) => {
     const {paymentId} = req.body;
 
@@ -163,12 +160,13 @@ exports.paymentCancelController =  (req, res) => {
                    
                      const user= await UserModel.findOne({where: {organization : organizationObj.name, role:"admin"}});
                   
-                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment  for ${paymnt.amount} units has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for units have been rejected.")
+                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of Ksh ${paymnt.amount} for ${paymnt.plan} plan has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for units has been rejected.")
                             res.json("payment saved successfully");
                  
                 })
             });
         }
+
 exports.unitPaymentController = (req, res) => {
     const  {amount,mpesaCode} = req.body;
     const  uid = req.user.id;
@@ -260,6 +258,7 @@ exports.unitPaymentUpdateController =  (req, res) => {
                 })
     
 }
+
 exports.unitPaymentCancelController =  (req, res) => {
     const {paymentId} = req.body;
     console.log("Payment id: "+paymentId)
@@ -289,6 +288,7 @@ exports.unitPaymentCancelController =  (req, res) => {
                 })
             });
         }
+
 exports.upgradeController = (req, res) => {
     const {amount, planname, mpesaCode} = req.body;
     const uid= req.user.id;
@@ -339,6 +339,144 @@ exports.upgradeController = (req, res) => {
 
     });
 };
+
+exports.senderIdPaymentController = (req, res) => {
+    const {amount, senderId, mpesaCode} = req.body;
+    const uid= req.user.id;
+    const paydate = new Date();
+    const time = new Date(paydate).getTime();
+
+    UserModel.findByPk(uid).then(user => {
+        if ( !user) {
+            return res.status(400).json({
+                error: 'Admin not found'
+            });
+        }
+             else {
+
+                
+            SenderIdModel.findOne({where:{name: senderId}}).then(async foundSenderId=>{
+                if(foundSenderId) return res.status(400).json({error: "This senderId is taken!"});
+
+                let payment = {
+                    organization: req.user.organization,
+                    amount: amount,
+                    date: paydate,
+                    time: time,
+                    senderId:senderId,
+                    state: "pending"
+                };
+
+                 SenderIdPaymentModel.create(payment).then(() => {
+               
+                     
+              mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'SenderId Payment.', `${user.firstname} ${user.lastname}`, `A payment of Ksh ${amount} has been made by the above named on behalf of ${req.user.organization}, as fees for ${senderId} senderId. </p>
+              <p>Mpesa code: <strong>${mpesaCode}</strong></p>
+              <p>The payment is waiting your approval`,"A new senderId request has been made.")
+
+                        res.json("Request made successfully");
+                     
+                   
+                })
+                .catch((err)=>{
+                        console.log('Payment Update ERROR', err);
+                        return res.status(400).json({
+                            error: 'Payment Update failed'
+                        });
+                
+                })
+            })
+        }
+
+    });
+};
+
+exports.updateSenderIdPaymentStateController = (req, res) => {
+    const { paymentId} = req.body;
+
+             SenderIdPaymentModel.findByPk(paymentId).then(async paymnt=>{
+                    if(!paymnt) return res.status(400).json({
+                        error: 'Payment not found.'
+                    });
+
+
+                    let payment ={
+                        state: "complete"
+                    };
+                    const senderIdExists = await SenderIdModel.findOne({where:{name: paymnt.senderId}});
+                    if(senderIdExists){
+                      return res.status(400).json({
+                        error: 'This senderId already exists.'
+                                });
+                    }
+                    paymnt.update(payment).then(async ()=>{ 
+                        let senderId ={
+                            name: paymnt.senderId,
+                            organization: organization,
+                            state: "pending"
+                           };
+                   
+                           SenderIdModel.create(senderId)
+                        .then(data => {
+                          console.log("senderIds  saved: "+JSON.stringify(data));
+                          mail.sendMail(res,process.env.FROM, admin.email,'SenderId payment approved.', `Hello ${admin.firstname}.`, `Your payment for ${paymnt.senderId} senderId has been approved. We have initiated a request to safaricom to process your sender Id. It will be ready within the next seven days.</p>
+                          <p>Thank you for chosing Rtech SMS.</p>`,"Subscription activated")
+                                res.json("payment approved successfully. The sendeId has been created.");
+                        })
+                        .catch(err => {
+                           console.log("senderId save error: "+JSON.stringify(err));
+                           return res.status(400).json({
+                                                  error: 'Error saving  senderds'
+                              });
+                        });     
+                      
+                             
+                             
+                        })
+                        .catch((err)=>{
+                                console.log('Organization Update ERROR', err);
+                                return res.status(400).json({
+                                    error: 'Organization Update failed'
+                                });
+                            
+                        })
+                    })
+            
+            
+        
+};
+
+exports.senderIdpaymentCancelController =  (req, res) => {
+    const {paymentId} = req.body;
+
+                SenderIdPaymentModel.findByPk(paymentId).then(async paymnt=>{
+                    if(!paymnt) return  res.status(400).json({
+                        error: 'Payment not found.'
+                    });
+                    if(paymnt.state == "complete") return  res.status(400).json({
+                        error: 'Payment is already complete'
+                    });
+                    if(paymnt.state == "rejected") return  res.status(400).json({
+                        error: 'Payment is already rejected'
+                    });
+                    let organizationObj = await OrganizationModel.findOne({name: paymnt.organization});
+                    if(!organizationObj) return res.status(400).json({error: "Organization not found!"});
+
+                let payment ={
+                    state: "rejected"
+                };
+
+                paymnt.update(payment).then(async ()=>{
+                   
+                     const user= await UserModel.findOne({where: {organization : organizationObj.name, role:"admin"}});
+                  
+                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of Ksh ${paymnt.amount} for ${paymnt.senderId} senderId has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for senderId has been rejected.")
+                            res.json("payment saved successfully");
+                 
+                })
+            });
+        }
+        
 exports.deleteController = (req, res) => {
     let id  =req.params.id;
    

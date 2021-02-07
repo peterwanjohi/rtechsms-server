@@ -33,7 +33,7 @@ const paymentsRouter = require('./routes/payments.route');
 const organizationRouter = require('./routes/organization.route');
 const contactsRouter = require('./routes/contacts.route');
 const plansRouter = require('./routes/plan.route');
-
+const senderIdRouter = require('./routes/senderid.route');
 
 // Dev Logginf Middleware
 if (process.env.NODE_ENV === 'development') {
@@ -53,7 +53,7 @@ app.use('/api', paymentsRouter);
 app.use('/api', organizationRouter);
 app.use('/api', contactsRouter);
 app.use('/api', plansRouter);
-
+app.use('/api', senderIdRouter);
 
 app.use((req, res) => {
     res.status(404).json({

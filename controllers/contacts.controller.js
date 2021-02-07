@@ -1,6 +1,7 @@
 const db = require("../models");
+const singleContactModel = require("../models/singleContact.model");
 const ContactListModel = db.contacts;
-const path = require('path');
+const SingleContactModel = db.singleContacts;
 
 exports.readContactsController = (req, res) => {
     const orgname = req.user.organization;
@@ -12,7 +13,19 @@ exports.readContactsController = (req, res) => {
                 error: 'organization not found'
             });
         }
-        // let contactsList = JSON.parse(contacts);
+        res.json(contacts);
+    });
+};
+
+exports.readAllSingleContactsController = (req, res) => {
+    console.log("req.user")
+
+    SingleContactModel.findAll({where:{organization: orgname}}).then(contacts => {
+        if (!contacts) {
+            return res.status(400).json({
+                error: 'organization not found'
+            });
+        }
         res.json(contacts);
     });
 };
@@ -45,6 +58,35 @@ exports.saveController = async (req, res) => {
     
 };
 
+exports.saveSingleController = async (req, res) => {
+    const { name, phone } = req.body;
+    const orgname = req.user.organization;
+    let contact ={
+        name: name,
+        phone: phone,
+        organization:orgname,
+     };
+
+      const contactExists = await SingleContactModel.findOne({where:{organization: orgname, phone: phone}});
+      if(contactExists){
+        return res.status(400).json({
+          error: 'This contact already exists.'
+});
+      }
+     SingleContactModel.create(contact)
+  .then(data => {
+    console.log("Contacts  saved: "+JSON.stringify(data));
+    res.json(data);
+  })
+  .catch(err => {
+     console.log("Contact save error: "+JSON.stringify(err));
+     return res.status(400).json({
+                            error: 'Error saving  contact'
+        });
+  });
+    
+};
+
 exports.deleteController = async (req, res) => {
     const group = req.params.group;
     const orgname = req.user.organization;
@@ -62,10 +104,10 @@ exports.deleteController = async (req, res) => {
     
 };
 
-exports.deleteController = (req, res) => {
+exports.deleteSingleController = (req, res) => {
   let id  =req.params.id;
  
-  ContactListModel.findByPk(id).then(contact => {
+  singleContactModel.findByPk(id).then(contact => {
       if (!contact) {
           return res.status(400).json({
               error: 'contact not found'
