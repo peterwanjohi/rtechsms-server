@@ -44,9 +44,7 @@ exports.readAllController = (req, res) => {
 
     UserModel.findAll({where:{organization: organization, id: { [Op.ne]: userId }}}).then(( users) => {
         if ( users.length == 0) {
-            return res.status(400).json({
-                message: 'No User found'
-            });
+            return  res.json(users);
         }
         users.forEach(user => {
             user.hashed_password = undefined;
@@ -57,7 +55,6 @@ exports.readAllController = (req, res) => {
 };
 
 exports.updateController = (req, res) => {
-    console.log('UPDATE USER - req.user', req.user, 'UPDATE DATA', req.body);
     const { firstname,lastname,email,phone } = req.body;
 
     UserModel.findByPk(req.user.id).then(user => {
@@ -112,7 +109,6 @@ const updatedUser ={
 
 
 exports.updateavatarController = (req, res) => {
-    console.log("Req"+req)
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(500).json(err)
@@ -136,7 +132,6 @@ UserModel.findByPk(req.user.id).then(user => {
             res.json(updatedUser);
             
         }).catch(err=>{
-                console.log('User Update ERROR', err);
                 return res.status(400).json({
                     error: 'User Update failed'
                 });
@@ -153,23 +148,22 @@ exports.deleteController = (req, res) => {
     if(!id){
         id = req.user.id;
     }
-    UserModel.findByPk(id).then(user => {
+    UserModel.findByPk(id).then(async user => {
         if (!user) {
             return res.status(400).json({
                 error: 'User not found'
             });
         }
         
-        user.destroy().then(() => {
-            
+        try {
+           await user.destroy();
             res.json("User account deleted");
-            
-        }).catch(err=>{
-                console.log('User delete ERROR', err);
-                return res.status(400).json({
-                    error: 'User delete failed'
-                });
-            
-        });
+        } catch (error) {
+            console.log('User delete ERROR', err);
+            return res.status(400).json({
+                error: 'User delete failed'
+            });
+        }
+       
     });
 };

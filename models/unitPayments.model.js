@@ -1,4 +1,6 @@
 
+'use strict';
+var Temporal = require('sequelize-temporal');
 module.exports = (sequelize, Sequelize) => {
     const paymentSchema = sequelize.define("unitpayment", {
       organization: {
@@ -25,5 +27,6 @@ module.exports = (sequelize, Sequelize) => {
       },
       
     });
+    Temporal(paymentSchema, sequelize);
     return paymentSchema;
 };

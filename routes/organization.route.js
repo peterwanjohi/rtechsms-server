@@ -15,7 +15,7 @@ const {
 const { requireSignin,adminMiddleware } = require('../controllers/auth.controller');
 const { readAllController } = require('../controllers/user.controller');
 
-router.get('/organization',  requireSignin, adminMiddleware, readOrganizationController);
+router.get('/organization',  requireSignin, readOrganizationController);
 router.get('/organization/users',  requireSignin, readAllController);
 
 // Update details

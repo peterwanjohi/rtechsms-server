@@ -1,4 +1,5 @@
 'use strict';
+var Temporal = require('sequelize-temporal');
 module.exports = (sequelize, Sequelize) => {
     const messageSchema = sequelize.define("message", {
       text: {
@@ -25,5 +26,6 @@ module.exports = (sequelize, Sequelize) => {
       },
       
     });
+    Temporal(messageSchema, sequelize);
     return messageSchema;
 };

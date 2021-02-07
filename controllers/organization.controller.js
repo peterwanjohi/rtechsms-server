@@ -38,9 +38,7 @@ exports.readOrganizationController = (req, res) => {
 
     OrganizationModel.findOne({where:{name: orgname}}).then(organization => {
         if (!organization) {
-            return res.status(400).json({
-                error: 'organization not found'
-            });
+            return res.json([]);
         }
         res.json(organization);
     });
@@ -165,11 +163,11 @@ OrganizationModel.findOne({where:{name: req.user.organization}}).then(org => {
 exports.deleteController = (req, res) => {
     let id  =req.params.id;
    
-    OrganizationModel.findByPk(id).then(organization => {
+    OrganizationModel.findByPk(id).then(ation => {
         if (!organization) {
-            return res.status(400).json({
+            return res.status(400).json([{
                 error: 'organization not found'
-            });
+            }]);
         }
         
         organization.destroy().then(() => {

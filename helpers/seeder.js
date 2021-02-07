@@ -51,6 +51,11 @@ const plans = [
   name: 'Custom',
   price:-1,
   maxUsers:-1
+},
+{
+  name: 'Free Trial',
+  price:-1,
+  maxUsers:-1
 }
 ];
   
@@ -87,5 +92,4 @@ function encryptPassword(password, salt) {
     return Math.round(new Date().valueOf() * Math.random()) + '';
   }
 
-  seedAdmin();
   seedPlans();

@@ -9,8 +9,10 @@ const {
     signinController,
     forgotPasswordController,
     resetPasswordController,
+    changePasswordController,
     googleController,
-    facebookController
+    facebookController,
+    testMail
 } = require('../controllers/auth.controller')
 
 
@@ -22,13 +24,15 @@ const {
     resetPasswordValidator
 } = require('../helpers/valid');
 const { requireSignin,adminMiddleware } = require('../controllers/auth.controller');
-
+router.get('/testmail', testMail);
 router.post('/register',  validSign, registerController)
 router.post('/add-user',requireSignin,adminMiddleware, validUser, registerUserController);
 
 router.post('/login',validLogin, signinController);
 
 router.post('/activation', activationController);
+
+router.put('/changepassword',requireSignin,changePasswordController);
 
 // forgot reset password
 router.put('/forgotpassword', forgotPasswordValidator, forgotPasswordController);

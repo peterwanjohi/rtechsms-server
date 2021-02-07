@@ -1,3 +1,5 @@
+'use strict';
+var Temporal = require('sequelize-temporal');
 module.exports = (sequelize, Sequelize) => {
     const organizationSchema = sequelize.define("organization", {
       name: {
@@ -52,9 +54,10 @@ module.exports = (sequelize, Sequelize) => {
             defaultvalue:null
         },
         logo:{
-            type:Sequelize.BLOB('long'),
+            type:Sequelize.STRING,
              defaultvalue:null
             }
     });
+    Temporal(organizationSchema, sequelize);
     return organizationSchema;
 };

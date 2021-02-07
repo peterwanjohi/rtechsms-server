@@ -1,5 +1,6 @@
 
 'use strict';
+var Temporal = require('sequelize-temporal');
 module.exports = (sequelize, Sequelize) => {
     const contactSchema = sequelize.define("contacts", {
       group: {
@@ -21,5 +22,6 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
       },
     });
+    Temporal(contactSchema, sequelize);
     return contactSchema;
 };
