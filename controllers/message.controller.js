@@ -5,10 +5,10 @@ const Sequelize = require("sequelize");
 const africasTalking = require('africastalking');
 
 exports.sendController = (req, res) => {
-    const {message, recipients} =req.body;
+    const {message, receipients} =req.body;
 
     const organization = req.user.organization;
-    
+
     console.log("Contacts: "+recipients);
         // MessageModel.findAll({where: {organization: organization}}).then(messages => {
         //     if (!messages) {
@@ -20,11 +20,11 @@ exports.sendController = (req, res) => {
 
 exports.saveDraftController = (req, res) => {
     const {message, recipients} =req.body;
-
+    console.log("Resipients: "+JSON.stringify(recipients))
         const organization = req.user.organization;
         const draftMessage ={
             text: message,
-            recipients: recipients,
+            receipients: recipients,
             organization: organization,
             status: 'draft'
         }
@@ -33,6 +33,7 @@ exports.saveDraftController = (req, res) => {
                 res.json("Draft saved successfully");
             })
             .catch(err => {
+                console.log("ERROR: "+err)
                 return res.status(400).json({
                     error: 'Error saving draft.'
                 });
