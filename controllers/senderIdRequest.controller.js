@@ -1,7 +1,9 @@
 const db = require("../models");
 const SenderIdModel = db.sendeidrequests;
 const OrganizationModel = db.organization;
+const UserModel = db.auth;
 
+const mail = require("../services/mail");
 exports.readAllController = (req, res) => {
     SenderIdModel.findAll().then(senderIds => {
         if (!senderIds) {
@@ -71,9 +73,15 @@ exports.approveController = async (req, res) => {
                 let updatedSenderId ={
                     senderId: name
                 }
-                org.update(updatedSenderId).then(()=>{
+                org.update(updatedSenderId).then(async()=>{
+                    const admin= await UserModel.findOne({where: {organization : org.name, role:"admin"}});
+                  
+                    mail.sendMail(res,process.env.FROM, admin.email,'SenderId Approved.', `SenderId Approved.`, `Hello ${admin.firstname}. Your senderId ,<strong> ${name} </strong> been approved and activated.You are now able to send bulk SMS using this sender Id.</p>
+                    <p>Thank you for choosing Rtech SMS.</p>`,"Your senderId has been approved and activated.")
+                      res.json("Senderid approved successfully");
                     res.json("Sender Id Updated");
                 }).catch(err =>{
+                    console.log("Er:"+err)
                     return res.status(400).json({
                         error: 'SenderId update failed.'
                         });

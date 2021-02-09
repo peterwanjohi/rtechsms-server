@@ -341,10 +341,27 @@ exports.upgradeController = (req, res) => {
 };
 
 exports.senderIdPaymentController = (req, res) => {
-    const {amount, senderId, mpesaCode} = req.body;
+    const { senderId, mpesaCode, network} = req.body;
     const uid= req.user.id;
     const paydate = new Date();
     const time = new Date(paydate).getTime();
+
+    let net;
+    let amount;
+    switch(network){
+        case "safaricom":
+            net = "Safaricom Only";
+            amount = 10000;
+            break;
+            case "airtel":
+            net= "Airtel Only"
+            amount = 10000;
+            break;
+            case "safaricom_and_airtel":
+            net = "Safaricom And Airtel"
+            amount = 18000;
+            break;
+    }
 
     UserModel.findByPk(uid).then(user => {
         if ( !user) {
@@ -364,13 +381,14 @@ exports.senderIdPaymentController = (req, res) => {
                     date: paydate,
                     time: time,
                     senderId:senderId,
+                    amount:amount,
                     state: "pending"
                 };
 
                  SenderIdPaymentModel.create(payment).then(() => {
                
                      
-              mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'SenderId Payment.', `${user.firstname} ${user.lastname}`, `A payment of Ksh ${amount} has been made by the above named on behalf of ${req.user.organization}, as fees for ${senderId} senderId. </p>
+              mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'SenderId Payment.', `${user.firstname} ${user.lastname}`, `A payment of Ksh ${amount} has been made by the above named on behalf of ${req.user.organization}, as fees for ${senderId} senderId for ${net}. </p>
               <p>Mpesa code: <strong>${mpesaCode}</strong></p>
               <p>The payment is waiting your approval`,"A new senderId request has been made.")
 
@@ -392,7 +410,7 @@ exports.senderIdPaymentController = (req, res) => {
 };
 
 exports.updateSenderIdPaymentStateController = (req, res) => {
-    const { paymentId} = req.body;
+    const { paymentId,organization} = req.body;
 
              SenderIdPaymentModel.findByPk(paymentId).then(async paymnt=>{
                     if(!paymnt) return res.status(400).json({
@@ -409,6 +427,7 @@ exports.updateSenderIdPaymentStateController = (req, res) => {
                         error: 'This senderId already exists.'
                                 });
                     }
+                    const admin = await UserModel.findOne({where: {organization: organization, role:'admin'}});
                     paymnt.update(payment).then(async ()=>{ 
                         let senderId ={
                             name: paymnt.senderId,

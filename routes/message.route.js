@@ -10,8 +10,7 @@ router.get('/messages/all', requireSignin,superAdminMiddleware, readAllMessagesC
 router.get('/messages/:id', requireSignin, readSingleController);
 router.post('/messages/savedraft', requireSignin, saveDraftController);
 router.post('/messages/send', requireSignin, sendController);
-// router.put('/senderid/approve', requireSignin,superAdminMiddleware, approveController);
 router.delete('/message/single/:id/:organization', requireSignin, deleteController);
 router.delete('/message/organization/:organization', requireSignin, deletemessagesForOrganizationController);
 
-module.exports = router;
+module.exports = router; 

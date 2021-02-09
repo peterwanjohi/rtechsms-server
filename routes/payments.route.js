@@ -15,8 +15,8 @@ router.post('/payments/units', requireSignin, adminMiddleware, unitPaymentContro
 router.post('/payments/confirm-units',requireSignin, superAdminMiddleware, unitPaymentUpdateController);
 router.post('/payments/reject-units',requireSignin, superAdminMiddleware, unitPaymentCancelController);
 
-router.post('/payments/senderid', requireSignin, adminMiddleware, senderIdPaymentController);
+router.post('/payments/senderid', requireSignin, adminMiddleware, senderIdPaymentController); 
 router.post('/payments/confirm-senderid',requireSignin, superAdminMiddleware, updateSenderIdPaymentStateController);
 router.post('/payments/reject-senderid',requireSignin, superAdminMiddleware, senderIdpaymentCancelController);
 
-module.exports = router;
+module.exports = router;  

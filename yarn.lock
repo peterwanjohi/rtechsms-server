@@ -298,6 +298,11 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
+awesome-phonenumber@^2.45.0:
+  version "2.45.0"
+  resolved "https://registry.yarnpkg.com/awesome-phonenumber/-/awesome-phonenumber-2.45.0.tgz#997e49a7441b55d8a121d383ffd8d3667005f6ab"
+  integrity sha512-W5tMF9hJrw/WlWAnatYg+dXZnmJUF8e0TFqPmMqStwHsRDKnj5zkLsVbYjYI/6kd1f6A1mChF4lFC40zg/1dMw==
+
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
