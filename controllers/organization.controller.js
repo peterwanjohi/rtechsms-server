@@ -4,6 +4,8 @@ const OrganizationModel = db.organization;
 const Op = db.Sequelize.Op;
 const jwt = require('jsonwebtoken');
 var multer = require('multer')
+const NotificationModel = db.notification;
+
 const fs = require("fs");
 
 var storage = multer.diskStorage({
@@ -105,10 +107,19 @@ UserModel.findAll({where: {organization:organization.name}}).then( users=>{
                   expiresIn: '24h'
                 }
               );
+              const notification = {
+                message: `Dear ${req.user.firstname}. Your organization details have been updated.`,
+                read: false,
+                seen: false,
+                receipient: req.user.id,
+                type:'primary'
+                };
+                await NotificationModel.create(notification);
+              
         //    let tokenObj = {"token": token};
            const returnObj = updatedOrganization.get({ plain: true});
            returnObj.token = token;
-                // let orgObj =Object.assign(updatedOrganization,tokenObj )
+                
                 console.log("updatedOrganization: "+JSON.stringify(returnObj));
             res.json(returnObj);
             

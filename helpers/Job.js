@@ -1,5 +1,4 @@
 const cron = require('node-cron');
-const Organization = require("../models/organization.model");
 const moment = require("moment");
 
 cron.schedule('* * * * *', async function (req, res, next) {

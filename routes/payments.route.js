@@ -7,7 +7,7 @@ const {paymentValidator} = require('../helpers/valid');
 const { requireSignin, adminMiddleware ,superAdminMiddleware} = require('../controllers/auth.controller');
 
 router.post('/payments/subscribe', requireSignin, adminMiddleware,paymentValidator, paymentController);
-router.post('/payments/confirm',requireSignin, superAdminMiddleware, updatePaymentStateController);
+router.post('/payments/confirm',requireSignin, adminMiddleware, updatePaymentStateController);
 router.post('/payments/reject',requireSignin, superAdminMiddleware, paymentCancelController);
 router.post('/payments/upgrade',requireSignin, adminMiddleware, upgradeController);
 

@@ -6,7 +6,8 @@ const sms = require('../services/sms');
 const fetch = require("node-fetch");
 const organizationModel = db.organization;
 var PhoneNumber = require( 'awesome-phonenumber' );
-
+var _ = require('lodash');
+const moment = require('moment');
 
 exports.sendController = async (req, res) => {
     const {message, receipients} =req.body;
@@ -34,8 +35,6 @@ numbers.push(new PhoneNumber( value.phone, code ).getNumber( 'e164' ))
 const orgUnits= org.units;
 const clients = numbers.length;
 
-console.log("OrganizationUnits: "+orgUnits)
-console.log("clients: "+clients)
 if(orgUnits < clients){
     console.log(" org < cli", orgUnits <clients)
     return res.status(400).json({
@@ -78,11 +77,10 @@ if(messageRecipients.length === 0){
         organization: organization,
         status: 'sent'
     }
-    MessageModel.create(Message).then(messages => {
+    MessageModel.create(Message).then(() => {
         res.json("Mesage sent successfully");
     })
     .catch(err => {
-        console.log("ERROR: "+err)
         return res.status(400).json({
             error: 'Error saving draft.'
         });
@@ -120,13 +118,49 @@ exports.saveDraftController = (req, res) => {
 exports.readAllController = (req, res) => {
 const organization = req.user.organization;
 
-    MessageModel.findAll({where: {organization: organization}}).then(messages => {
+    MessageModel.findAll({where: {organization: organization, status: 'sent' }}).then(messages => {
         if (!messages) {
             return res.json([]);
         }
         res.json(messages);
     });
 };
+exports.readDraftsController = (req, res) => {
+    const organization = req.user.organization;
+    
+        MessageModel.findAll({where: {organization: organization, status: 'draft' }}).then(messages => {
+            if (!messages) {
+                return res.json([]);
+            }
+            res.json(messages);
+        });
+    };
+
+exports.getResultsForBarGraph =async (req, res)=>{
+    
+    const messages = await MessageModel.findAll({
+        where:{status:"sent", organization: req.user.organization},
+    group: 'createdAt'
+      });
+      if(!messages){
+          return res.json([]);
+      }
+                        var result = messages.reduce(function (r, a) {
+                            r[moment(a.createdAt, 'YYYY/MM/DD').format('M')] = r[moment(a.createdAt, 'YYYY/MM/DD').format('M')] || [];
+                            r[moment(a.createdAt, 'YYYY/MM/DD').format('M')].push(a);
+                            return r;
+                        }, Object.create(null));
+                    
+                    let graphRes ={};
+                    let arrayForGraphres=[];
+                    let keys= Object.keys(result);
+                    keys.forEach(key =>{
+                         graphRes[key] = result[key].length;
+                         arrayForGraphres.push(graphRes)
+                    })
+                   return res.json(arrayForGraphres);
+}
+
 exports.readSingleController = (req, res) => {
 
     const id = req.params.id;
@@ -196,22 +230,34 @@ exports.deleteController = (req, res) => {
 
 };
 
-function getip(){
-    const { networkInterfaces } = require('os');
 
-const nets = networkInterfaces();
-const results = Object.create(null); // Or just '{}', an empty object
+async function groupByDate(){
+    const messages = await MessageModel.findAll({ where:{status:"sent"}});
 
-for (const name of Object.keys(nets)) {
-    for (const net of nets[name]) {
-        // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
-        if (net.family === 'IPv4' && !net.internal) {
-            if (!results[name]) {
-                results[name] = [];
-            }
-            results[name].push(net.address);
-        }
-    }
+      if(messages){
+          console.log("Mess: "+messages)
+       messages.forEach(message =>{
+        // console.log("message.receipients: "+JSON.parse(message))
+
+    //     // .map(recipient =>{
+    //     //     if(recipient.statusCode ===101 ){
+    //     //        console.log("FOund 1")
+    //     //     }
+    //     // });
+       })
+      }
+                    //     var result = messages.reduce(function (r, a) {
+                    //         r[moment(a.createdAt, 'YYYY/MM/DD').format('M')] = r[moment(a.createdAt, 'YYYY/MM/DD').format('M')] || [];
+                    //         r[moment(a.createdAt, 'YYYY/MM/DD').format('M')].push(a);
+                    //         return r;
+                    //     }, Object.create(null));
+                    
+                    // let graphRes ={};
+                    // let arrayForGraphres=[];
+                    // let keys= Object.keys(result);
+                    // keys.forEach(key =>{
+                    //      graphRes[key] = result[key].length;
+                    //      arrayForGraphres.push(graphRes)
+                    // })
 }
-return results;
-}
+// groupByDate();

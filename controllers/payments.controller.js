@@ -8,6 +8,7 @@ const SenderIdPaymentModel =db.senderidpayments;
 const SenderIdModel = db.sendeidrequests;
 const {calculateNextPayment} = require("../helpers/Helper");
 const mail = require("../services/mail");
+const NotificationModel = db.notification;
 
 exports.readController = (req, res) => {
     const organization = req.user.organization;
@@ -101,7 +102,7 @@ exports.updatePaymentStateController = (req, res) => {
                         if(!organizationObject) return res.status(400).json({error: "Organization not found!"});
                         // let totalAmount = organization 
                         let date = Date.now();
-                        const days = (payment.amount / plan.price) * 30;
+                        const days = (paymnt.amount / plan.price) * 30;
                         nextpaymentDate = await calculateNextPayment(date, days);
                         const admin = await UserModel.findOne({where: {organization: organizationObject.name, role:'admin'}});
 
@@ -114,8 +115,17 @@ exports.updatePaymentStateController = (req, res) => {
                             is_paid: true,
                             next_payment_date: nextpaymentDate
                         }
-                        organizationObject.update(updatedOrganization).then(updatedOrg => {        
-                          mail.sendMail(res,process.env.FROM, admin.email,'Subscription approved.', `Hello ${admin.firstname}, Welcome Onboard!.`, `Your subscription for ${planname} plan has been approved. It expires on ${nextpaymentDate}. </p>
+                        organizationObject.update(updatedOrganization).then(async () => {   
+                            const notification = {
+                                message: `Dear ${admin.firstname}, Your payment of Ksh ${paymnt.amount} for ${plan.name} has been approved.`,
+                                read: false,
+                                seen: false,
+                                receipient: admin.id,
+                                type:'success'
+                                };
+                                await NotificationModel.create(notification);
+
+                          mail.sendMail(res,process.env.FROM, admin.email,'Subscription approved.', `Hello ${admin.firstname}, Welcome Onboard!.`, `Your subscription for ${plan.name} plan has been approved. It expires on ${ moment(nextpaymentDate).format('DD/MM/YYYY')}. </p>
                           <p>Thank you for chosing Rtech SMS.</p>`,"Subscription activated")
                                 res.json("payment approved successfully");
                              
@@ -159,7 +169,14 @@ exports.paymentCancelController =  (req, res) => {
                 paymnt.update(payment).then(async ()=>{
                    
                      const user= await UserModel.findOne({where: {organization : organizationObj.name, role:"admin"}});
-                  
+                     const notification = {
+                        message: `Dear ${user.firstname}. Your payment of Ksh ${paymnt.amount} for ${paymnt.plan} has been rejected!`,
+                        read: false,
+                        seen: false,
+                        receipient: user.id,
+                        type:'danger'
+                        };
+                        await NotificationModel.create(notification);
                           mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of Ksh ${paymnt.amount} for ${paymnt.plan} plan has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for units has been rejected.")
                             res.json("payment saved successfully");
                  
@@ -242,7 +259,14 @@ exports.unitPaymentUpdateController =  (req, res) => {
                      };
                      organizationObj.update(orgData).then(async () => {
                      const user= await UserModel.findOne({where: {organization : organizationObj.name, role:"admin"}});
-                  
+                     const notification = {
+                        message: `Dear ${user.firstname}. Your payment for ${units} units has been approved.`,
+                        read: false,
+                        seen: false,
+                        receipient: user.id,
+                        type:'success'
+                        };
+                        await NotificationModel.create(notification);
                           mail.sendMail(res,process.env.FROM, user.email,'Payment approved.', `Payment Approved.`, `Your payment  for ${paymnt.amount} units has been approved. Enjoy sending sms using our system. <p>Thank you for doing business with us.</p>`,"Your payment for units have been approved.")
                             res.json("payment saved successfully");
                         
@@ -281,6 +305,14 @@ exports.unitPaymentCancelController =  (req, res) => {
                 paymnt.update(payment).then(async ()=>{
                    
                      const user= await UserModel.findOne({where: {organization : organizationObj.name, role:"admin"}});
+                     const notification = {
+                        message: `Dear ${user.firstname}. Your payment for ${paymnt.amount} units has been cancelled. Please try to purchase again.!`,
+                        read: false,
+                        seen: false,
+                        receipient: user.id,
+                        type:'danger'
+                        };
+                        await NotificationModel.create(notification);
                   
                           mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment  for ${paymnt.amount} units has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for units have been rejected.")
                             res.json("payment saved successfully");

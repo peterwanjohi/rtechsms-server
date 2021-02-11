@@ -2,6 +2,7 @@ const db = require("../models");
 const SenderIdModel = db.sendeidrequests;
 const OrganizationModel = db.organization;
 const UserModel = db.auth;
+const NotificationModel = db.notification;
 
 const mail = require("../services/mail");
 exports.readAllController = (req, res) => {
@@ -75,7 +76,14 @@ exports.approveController = async (req, res) => {
                 }
                 org.update(updatedSenderId).then(async()=>{
                     const admin= await UserModel.findOne({where: {organization : org.name, role:"admin"}});
-                  
+                    const notification = {
+                        message: `Dear ${admin.firstname}. Your senderId has been approved!`,
+                        read: false,
+                        seen: false,
+                        receipient: admin.id,
+                        type:'primary'
+                        };
+                        await NotificationModel.create(notification);
                     mail.sendMail(res,process.env.FROM, admin.email,'SenderId Approved.', `SenderId Approved.`, `Hello ${admin.firstname}. Your senderId ,<strong> ${name} </strong> been approved and activated.You are now able to send bulk SMS using this sender Id.</p>
                     <p>Thank you for choosing Rtech SMS.</p>`,"Your senderId has been approved and activated.")
                       res.json("Senderid approved successfully");
