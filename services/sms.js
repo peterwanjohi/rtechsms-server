@@ -5,11 +5,6 @@ const credentials = {
 
 const Africastalking = require('africastalking')(credentials);
 
-// Initialize a service e.g. SMS
 const sms = Africastalking.SMS
-console.log("APIKEY: "+process.env.APIKEY)
-console.log("USERNAME: "+process.env.SMSUSERNAME)
-// Use the service
 
-// Send message and capture the response or error
 module.exports = sms;

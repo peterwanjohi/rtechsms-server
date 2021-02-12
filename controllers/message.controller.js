@@ -10,7 +10,7 @@ var _ = require('lodash');
 const moment = require('moment');
 
 exports.sendController = async (req, res) => {
-    const {message, receipients} =req.body;
+    const {message, receipients, draftId} =req.body;
 
     const organization = req.user.organization;
  const org = await organizationModel.findOne({where:{name: organization}});
@@ -77,7 +77,11 @@ if(messageRecipients.length === 0){
         organization: organization,
         status: 'sent'
     }
-    MessageModel.create(Message).then(() => {
+    MessageModel.create(Message).then(async () => {
+        if(draftId){
+            const result = await updateDraft(draftId, organization);
+            if(result) res.json("Your message hass been sent successfully");
+        }
         res.json("Mesage sent successfully");
     })
     .catch(err => {
@@ -135,7 +139,7 @@ exports.readDraftsController = (req, res) => {
             res.json(messages);
         });
     };
-
+  
 exports.getResultsForBarGraph =async (req, res)=>{
     
     const messages = await MessageModel.findAll({
@@ -152,14 +156,30 @@ exports.getResultsForBarGraph =async (req, res)=>{
                         }, Object.create(null));
                     
                     let graphRes ={};
-                    let arrayForGraphres=[];
+                    let arrayForGraphs=[];
                     let keys= Object.keys(result);
                     keys.forEach(key =>{
                          graphRes[key] = result[key].length;
-                         arrayForGraphres.push(graphRes)
+                         arrayForGraphs.push(graphRes)
                     })
-                   return res.json(arrayForGraphres);
+                   return res.json(arrayForGraphs);
 }
+exports.getMessageCount = async (req,res)=>{
+    const messages = await MessageModel.findAll({
+        where:{status:"sent", organization: req.user.organization}, });
+      if(!messages){
+        console.log("count: ");
+
+          return res.json({"count":0});
+      }
+      else {
+        console.log("count: "+messages.length);
+
+          return res.json({"count": messages.length})
+      }
+    
+}
+
 
 exports.readSingleController = (req, res) => {
 
@@ -187,9 +207,10 @@ exports.deleteController = (req, res) => {
    
     MessageModel.findByPk(id).then(message => {
         if (!message) {
-            return res.status(400).json({
-                error: 'message not found'
-            });
+            res.status(400).json({
+                success: false,
+                errors:"Message not found."
+              });
         }
         
         message.destroy().then(() => {
@@ -198,10 +219,10 @@ exports.deleteController = (req, res) => {
             
         }).catch(err=>{
                 console.log('message delete ERROR', err);
-                return res.status(400).json({
-                    error: 'message delete failed'
-                });
-            
+                res.status(400).json({
+                    success: false,
+                    errors:"Failed to delete message."
+                  });
         });
     });
 }
@@ -221,15 +242,28 @@ exports.deleteController = (req, res) => {
                 
             }).catch(err=>{
                     console.log('message delete ERROR', err);
-                    return res.status(400).json({
-                        error: 'message delete failed'
-                    });
+                    res.status(400).json({
+                        success: false,
+                        errors:"Failed to delete message."
+                      });
                 
             });
         });
 
 };
 
+ function updateDraft(id, organization){
+    MessageModel.findOne({where: {id: id,organization: organization, status: 'draft' }}).then(async message => {
+        if (!message) {
+            return res.json([]);
+        }
+      let updated ={
+          status: "sent"
+      }
+   const result =  await message.update(updated);
+    return result;
+    });
+}
 
 async function groupByDate(){
     const messages = await MessageModel.findAll({ where:{status:"sent"}});
@@ -253,11 +287,11 @@ async function groupByDate(){
                     //     }, Object.create(null));
                     
                     // let graphRes ={};
-                    // let arrayForGraphres=[];
+                    // let arrayForGraphs=[];
                     // let keys= Object.keys(result);
                     // keys.forEach(key =>{
                     //      graphRes[key] = result[key].length;
-                    //      arrayForGraphres.push(graphRes)
+                    //      arrayForGraphs.push(graphRes)
                     // })
 }
 // groupByDate();

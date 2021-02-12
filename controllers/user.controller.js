@@ -1,11 +1,8 @@
-const expressJwt = require('express-jwt');
 const db = require("../models");
 const UserModel = db.auth;
-const OrganizationModel = db.organization;
 var multer = require('multer')
 const fs = require("fs");
 const Op = db.Sequelize.Op;
-const {calculateNextPayment} = require("../helpers/Helper");
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -59,6 +56,57 @@ exports.updateController = (req, res) => {
     const { firstname,lastname,email,phone } = req.body;
 
     UserModel.findByPk(req.user.id).then(user => {
+        if (!user) {
+            return res.status(400).json({
+                error: 'User not found'
+            });
+        }
+        if (!firstname) {
+            return res.status(400).json({
+                error: 'First Name is required'
+            });
+        }
+        if (!lastname) {
+            return res.status(400).json({
+                error: 'Last Name is required'
+            });
+        }
+        if (!email) {
+            return res.status(400).json({
+                error: 'Email is required'
+            });
+        }
+
+        if(!phone){
+            return res.status(400).json({
+                error: 'Phone number is required'
+            });
+        }
+       
+const updatedUser ={
+    firstname:firstname,
+    lastname:lastname,
+    email:email,
+    phone:phone
+};
+        user.update(updatedUser).then((updatedUser) => {
+            
+            updatedUser.hashed_password = undefined;
+            updatedUser.salt = undefined;
+            res.json(updatedUser);
+            
+        }).catch(err=>{
+                console.log('User Update ERROR', err);
+                return res.status(400).json({
+                    error: 'User Update failed'
+                });
+            
+        });
+    });
+};
+exports.updateUserController = (req, res) => {
+    const {id, firstname,lastname,email,phone } = req.body;
+    UserModel.findByPk(id).then(user => {
         if (!user) {
             return res.status(400).json({
                 error: 'User not found'

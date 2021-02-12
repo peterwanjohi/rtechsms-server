@@ -72,10 +72,6 @@ app.use((req, res) => {
     })
 });
 
-
-   
-
-
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
@@ -122,4 +118,4 @@ cron.schedule('* * * * *',  async function (req, res, next) {
     }
 
 });
-// db.sequelize.sync({ alter: true });
+db.sequelize.sync({ alter: true });
