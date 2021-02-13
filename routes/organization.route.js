@@ -6,7 +6,8 @@ const {
     readOrganizationController,
 
     updateController,
-    updateLogoController
+    updateLogoController,
+    readOrganizationPayStatus
 } = require('../controllers/organization.controller');
 
 const {
@@ -17,6 +18,7 @@ const { readAllController } = require('../controllers/user.controller');
 
 router.get('/organization',  requireSignin, readOrganizationController);
 router.get('/organization/users',  requireSignin, readAllController);
+router.get('/organization/paymentstatus',  requireSignin, readOrganizationPayStatus);
 
 // Update details
 router.post('/organization/update-logo', validDetails,requireSignin,adminMiddleware, updateLogoController);

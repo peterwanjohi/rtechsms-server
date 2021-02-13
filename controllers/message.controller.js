@@ -13,13 +13,23 @@ exports.sendController = async (req, res) => {
     const {message, receipients, draftId} =req.body;
 
     const organization = req.user.organization;
+    let sender = 'RTECHSMS';
  const org = await organizationModel.findOne({where:{name: organization}});
+ if((org.plan != "Free Plan" || (org.plan == "Free Plan" && org.sent_messages >= 2)) && !org.senderId){
+     return res.status(400).json({
+        success: false,
+        errors:"You must have a valid senderId to send messages."
+      });  
+ }
+ if(org.senderId){
+     sender = org.senderId;
+ }
+
  const country = org.country;
  if(!country){
   return  res.json("You have not a country for your organization.")
  }
 let numbers =[];
-
 await fetch("https://restcountries.eu/rest/v2/name/"+country.toLowerCase()).then(resp=>{
   return resp.json();
 }).then(json=>{
@@ -33,6 +43,7 @@ numbers.push(new PhoneNumber( value.phone, code ).getNumber( 'e164' ))
 })
 
 const orgUnits= org.units;
+const sent_messages= org.sent_messages;
 const clients = numbers.length;
 
 if(orgUnits < clients){
@@ -47,7 +58,7 @@ if(orgUnits < clients){
     const options = {
         to: numbers,
         message: message,
-        from:'RTECHSMS'
+        from:sender
     }
     sms.send(options)
         .then( async response => {
@@ -61,19 +72,27 @@ if(messageRecipients.length === 0){
       });
 }
       let unitsUsed = 0;
+      let recipientData =[]
       messageRecipients.map(recipient =>{
           if(recipient.statusCode ===101 ){
               unitsUsed += 1;
           }
+          //"statusCode": 101,
+        //   "number": "+254711XXXYYY",
+        //   "status": "Success",
+          let resObj={statusCode:recipient.statusCode , number: recipient.number, status: recipient.status };
+
+          recipientData.push(resObj);
       });
       console.log("Units Used: "+unitsUsed)
       const unitsupdate = orgUnits - unitsUsed;
+      const updateMessages = sent_messages +1;
 
-      await org.update({units: unitsupdate});
+      await org.update({units: unitsupdate, sent_messages: updateMessages});
 
       const Message ={
         text: message,
-        receipients: messageRecipients,
+        receipients: recipientData,
         organization: organization,
         status: 'sent'
     }
@@ -280,18 +299,6 @@ async function groupByDate(){
     //     // });
        })
       }
-                    //     var result = messages.reduce(function (r, a) {
-                    //         r[moment(a.createdAt, 'YYYY/MM/DD').format('M')] = r[moment(a.createdAt, 'YYYY/MM/DD').format('M')] || [];
-                    //         r[moment(a.createdAt, 'YYYY/MM/DD').format('M')].push(a);
-                    //         return r;
-                    //     }, Object.create(null));
-                    
-                    // let graphRes ={};
-                    // let arrayForGraphs=[];
-                    // let keys= Object.keys(result);
-                    // keys.forEach(key =>{
-                    //      graphRes[key] = result[key].length;
-                    //      arrayForGraphs.push(graphRes)
-                    // })
+              
 }
 // groupByDate();

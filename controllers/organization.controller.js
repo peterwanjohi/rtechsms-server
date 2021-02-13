@@ -45,6 +45,15 @@ exports.readOrganizationController = (req, res) => {
         res.json(organization);
     });
 };
+exports.readOrganizationPayStatus = (req, res) => {
+    const orgname = req.user.organization;
+    OrganizationModel.findOne({where:{name: orgname}}).then(organization => {
+        if (!organization) {
+            return res.json([]);
+        }
+        res.json({paid: organization.is_paid,plan:organization.plan});
+    });
+};
 
 exports.updateController = (req, res) => {
     const { name,address,city,country, motto, } = req.body;

@@ -15,6 +15,7 @@ exports.readAllController = (req, res) => {
 exports.readController = (req, res) => {
 
     const plan = req.params.plan;
+    console.log("Plan:",JSON.stringify(plan))
 
     PlanModel.findAll({where: {name:Sequelize.and({ [Op.ne]: plan }, { [Op.ne]: "Custom" }, { [Op.ne]: "Free Trial" })}}).then(plans => {
         if (!plans) {

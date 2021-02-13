@@ -101,7 +101,13 @@ exports.updatePaymentStateController = (req, res) => {
                         let organizationObject = await OrganizationModel.findOne({where:{name: paymnt.organization}});
                         if(!organizationObject) return res.status(400).json({error: "Organization not found!"});
                         // let totalAmount = organization 
-                        let date = Date.now();
+                        let date = null;
+                      if(organizationObject.next_payment_date && moment(organizationObject.next_payment_date).format("YYYY-MM-DD hh:mm") > moment(new Date()).format("YYYY-MM-DD hh:mm") ){
+                          date = moment(organizationObject.next_payment_date).format("YYYY-MM-DD hh:mm");
+                      }
+                      else{
+                          date = Date.now();
+                      }
                         const days = (paymnt.amount / plan.price) * 30;
                         nextpaymentDate = await calculateNextPayment(date, days);
                         const admin = await UserModel.findOne({where: {organization: organizationObject.name, role:'admin'}});
