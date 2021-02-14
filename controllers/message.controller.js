@@ -65,6 +65,8 @@ if(orgUnits < clients){
        console.log("Response: "+JSON.stringify(response))
       const rs =  response.SMSMessageData;
       const messageRecipients = rs.Recipients;
+             console.log("messageRecipients.length: "+messageRecipients.length)
+
 if(messageRecipients.length === 0){
     return res.status(400).json({
         success: false,
@@ -77,9 +79,7 @@ if(messageRecipients.length === 0){
           if(recipient.statusCode ===101 ){
               unitsUsed += 1;
           }
-          //"statusCode": 101,
-        //   "number": "+254711XXXYYY",
-        //   "status": "Success",
+       ,
           let resObj={statusCode:recipient.statusCode , number: recipient.number, status: recipient.status };
 
           recipientData.push(resObj);
@@ -98,15 +98,15 @@ if(messageRecipients.length === 0){
     }
     MessageModel.create(Message).then(async () => {
         if(draftId){
-            const result = await updateDraft(draftId, organization);
-            if(result) res.json("Your message hass been sent successfully");
+        await updateDraft(draftId, organization);
+        return res.json("Your message hass been sent successfully");
         }
-        res.json("Mesage sent successfully");
+       return res.json("Mesage sent successfully");
     })
     .catch(err => {
-        return res.status(400).json({
-            error: 'Error saving draft.'
-        });
+        // return res.status(400).json({
+        //     error: 'Error saving draft.'
+        // });
     });
         })
         .catch( error => {
@@ -295,16 +295,14 @@ exports.deleteController = (req, res) => {
 
 };
 
- function updateDraft(id, organization){
+async function updateDraft(id, organization){
     MessageModel.findOne({where: {id: id,organization: organization, status: 'draft' }}).then(async message => {
         if (!message) {
-            return res.json([]);
+            return false;
         }
-      let updated ={
-          status: "sent"
-      }
-   const result =  await message.update(updated);
-    return result;
+     
+   await message.destroy();
+    return true;
     });
 }
 

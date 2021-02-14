@@ -9,7 +9,6 @@ const UserModel = db.auth;
 const NotificationModel = db.notification;
 
 const OrganizationModel = db.organization;
-const Op = db.Sequelize.Op;
 const mail = require("../services/mail");
 const {calculateNextPayment} = require("../helpers/Helper");
 
@@ -208,7 +207,7 @@ exports.activationController = (req, res) => {
           };
           await NotificationModel.create(notification);
 
-        mail.sendMail(res,process.env.FROM, email,'Temporaly password.', `Hello ${user.firstname}, Welcome Onboard!.`, `Your new account has been succesfully activated. Thank you for choosing Rtech Sms.</p>
+        mail.sendMail(res,process.env.FROM, email,'Temporaly password.', `Hello <strong>${user.firstname}</strong>, Welcome Onboard!.`, `Your new account has been succesfully activated. Thank you for choosing Rtech Sms.</p>
       `," Rtech SMS account activated.");
             return res.json({
                   success: true,
@@ -373,7 +372,7 @@ exports.forgotPasswordController = (req, res) => {
           {
             resetPasswordLink: token
           }).then(() => {
-            mail.sendRegistrationMailMail(res, process.env.FROM, email,"Password Reset","Password Reset link.",`${process.env.CLIENT_URL}/reset-password/${token}`,`Hello ${user.firstname}. You have requested to reset your password.`,"Reset Password","Password reset link.");
+            mail.sendRegistrationMailMail(res, process.env.FROM, email,"Password Reset","Password Reset link.",`${process.env.CLIENT_URL}/reset-password/${token}`,`Hello <strong>${user.firstname}</strong>. You have requested to reset your password.`,"Reset Password","Password reset link.");
             return res.json({
               message: `An email has been sent to ${email}. Follow the instruction to reset your password.`
             });
@@ -496,9 +495,10 @@ exports.changePasswordController = (req, res) => {
   
 };
 exports.testMail = (req, res)=>{
+
   //from,to,subject,h1, message
   //res,from,to,subject,h1,link
-  mail.sendRegistrationMailMail(res, process.env.FROM, 'peterwanjohi143@gmail.com',"Testing","This is a test mail.",process.env.CLIENT_URL,"We're excited to have you on board. First, you need to verify your account","Reset Password","We're thrilled to have you here! Get ready to dive into your new account.");
+  mail.sendRegistrationMailMail(res, "wanjohipeter30@gmail.com", 'peterwanjohi143@gmail.com',"Testing","This is a test mail.",process.env.CLIENT_URL,"We're excited to have you on board. First, you need to verify your account","Reset Password","We're thrilled to have you here! Get ready to dive into your new account.");
 }
 // const client = new OAuth2Client(process.env.GOOGLE_CLIENT,process.env.GOOGLE_SECRET);
 // Google Login

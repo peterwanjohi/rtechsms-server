@@ -15,7 +15,6 @@ router.get('/messages/all', requireSignin,superAdminMiddleware, readAllMessagesC
 router.get('/messages/:id', requireSignin, readSingleController);
 router.post('/messages/savedraft', requireSignin, saveDraftController);
 router.post('/messages/send', requireSignin, sendController);
-// router.post('/messages/updateDraft', requireSignin, sendController);
 
 router.delete('/message/single/:id/', requireSignin, deleteController);
 router.delete('/message/organization/:organization', requireSignin, deletemessagesForOrganizationController);

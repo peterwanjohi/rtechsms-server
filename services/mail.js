@@ -1,5 +1,3 @@
-const jwt = require('jsonwebtoken');
-const { errorHandler } = require('../helpers/dbErrorHandling');
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
@@ -98,7 +96,7 @@ const head = `<head>
     }
 
     /* MOBILE STYLES */
-    @media screen and (max-width:600px) {
+    @media screen and (max-width:900px) {
         h1 {
             font-size: 32px !important;
             line-height: 32px !important;
@@ -130,19 +128,19 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
                   <!-- LOGO -->
                   <tr>
                       <td bgcolor="#292f43" align="center">
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                               <tr>
-                                  <td align="center" valign="top" style="padding: 40px 10px 40px 10px;"> </td>
+                              <td align="center" valign="top" style="padding: 10px 10px 40px 10px;"> <img src=" https://ad51018e9536.ngrok.io/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
                               </tr>
                           </table>
                       </td>
                   </tr>
                   <tr>
                       <td bgcolor="#292f43" align="center" style="padding: 0px 10px 0px 10px;">
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                               <tr>
                                   <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
-                                      <h1 style="font-size: 38px; font-weight: 400; margin: 2;">${h1}</h1> <img src=" https://img.icons8.com/clouds/100/000000/handshake.png" width="125" height="120" style="display: block; border: 0px;" />
+                                      <h1 style="font-size: 28px; font-weight: 400; margin: 2;">${h1}</h1> 
                                   </td>
                               </tr>
                              
@@ -151,7 +149,7 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
                   </tr>
                   <tr>
                       <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                               <tr>
                                   <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                                   <hr/>
@@ -184,7 +182,7 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
                   </tr>
                   <tr>
                       <td bgcolor="#f4f4f4" align="center" style="padding: 30px 10px 0px 10px;">
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                               <tr>
                                   <td bgcolor="#FFECD1" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                                       <h2 style="font-size: 20px; font-weight: 400; color: #111111; margin: 0;">Need more help?</h2>
@@ -196,7 +194,7 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
                   </tr>
                   <tr>
                       <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                               <tr>
                                   <td bgcolor="#f4f4f4" align="left" style="padding: 0px 30px 30px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;"> <br>
                                       <hr />
@@ -222,6 +220,108 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
         })  
   
   }
+  exports.sendCustomMail = async (from,subject,h1, message,hidden) => {
+
+    var mailOptions ={
+      from: process.env.FROM,
+      to: "peterwanjohi143@gmail.com",//process.env.MAILERTESTTO,
+      subject: subject+" from "+from,
+      html:`
+      <!DOCTYPE html>
+      <html>
+  ${head}
+      
+      <body style="background-color: #f4f4f4; margin: 0 !important; padding: 0 !important;">
+          <!-- HIDDEN PREHEADER TEXT -->
+          <div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;"> ${hidden} </div>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+              <!-- LOGO -->
+              <tr>
+              <td align="center">
+              <table  bgcolor="#292f43" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
+                  <tr>
+                      <td align="center" valign="top" style="padding: 10px 10px 40px 10px;"> <img src=" https://ad51018e9536.ngrok.io/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
+                  </tr>
+              </table>
+          </td>
+              </tr>
+              <tr>
+                  <td bgcolor="#292f43" align="center" style="padding: 0px 10px 0px 10px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
+                          <tr>
+                              <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
+                                  <h1 style="font-size: 28px; font-weight: 400; margin: 2;">${h1}</h1> 
+                              </td>
+                          </tr>
+                         
+                      </table>
+                  </td>
+              </tr>
+              <tr>
+                  <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
+                          <tr>
+                              <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
+                              <hr/>
+                                  <p style="margin: 0;">${message}</p>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td bgcolor="#ffffff" align="left">
+                                
+                              </td>
+                          </tr> <!-- COPY -->
+                          <tr>
+                             
+                          </tr> <!-- COPY -->
+                          <tr>
+                             
+                          </tr>
+                          <tr>
+                              <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
+                                  <p style="margin: 0;">If you have any questions, just reply to this email—we're always happy to help out.</p>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
+                                  <p style="margin: 0;">Cheers,<br>Rtech Sms Team</p>
+                              </td>
+                          </tr>
+                      </table>
+                  </td>
+              </tr>
+              <tr>
+                  <td bgcolor="#f4f4f4" align="center" style="padding: 30px 10px 0px 10px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
+                          <tr>
+                              <td bgcolor="#FFECD1" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
+                                  <h2 style="font-size: 20px; font-weight: 400; color: #111111; margin: 0;">Need more help?</h2>
+                                  <p style="margin: 0;"><a href=${process.env.CLIENT_URL} target="_blank" style="color: #FFA73B;">We&rsquo;re here to help you out</a></p>
+                              </td>
+                          </tr>
+                      </table>
+                  </td>
+              </tr>
+              <tr>
+                  <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
+                   
+                  </td>
+              </tr>
+          </table>
+      </body>
+      
+      </html>`
+    };
+
+   await transporter.sendMail(mailOptions).then((ee)=>{
+        console.log("mail sent: ")
+       return true;
+    }).catch((err)=>{
+        console.log("Error1 sending mail: "+err)
+return false;
+    })  
+
+}
   
   exports.sendAdminMail = async (res,from,to,subject,h1, message,hidden) => {
     
@@ -240,20 +340,20 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <!-- LOGO -->
               <tr>
-                  <td bgcolor="#292f43" align="center">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-                          <tr>
-                              <td align="center" valign="top" style="padding: 40px 10px 40px 10px;"> </td>
-                          </tr>
-                      </table>
-                  </td>
+              <td align="center">
+              <table  bgcolor="#292f43" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
+                  <tr>
+                      <td align="center" valign="top" style="padding: 10px 10px 40px 10px;"> <img src=" https://ad51018e9536.ngrok.io/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
+                  </tr>
+              </table>
+          </td>
               </tr>
               <tr>
                   <td bgcolor="#292f43" align="center" style="padding: 0px 10px 0px 10px;">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                           <tr>
                               <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
-                                  <h1 style="font-size: 38px; font-weight: 400; margin: 2;">${h1}</h1> <img src=" https://img.icons8.com/clouds/100/000000/handshake.png" width="125" height="120" style="display: block; border: 0px;" />
+                                  <h1 style="font-size: 28px; font-weight: 400; margin: 2;">${h1}</h1> 
                               </td>
                           </tr>
                          
@@ -262,7 +362,7 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
               </tr>
               <tr>
                   <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                           <tr>
                               <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                               <hr/>
@@ -288,7 +388,7 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
              
               <tr>
                   <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                           <tr>
                               <td bgcolor="#f4f4f4" align="left" style="padding: 0px 30px 30px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;"> <br>
                                   <hr />
@@ -331,20 +431,20 @@ exports.sendRegistrationMailMail = async (res,from,to,subject,h1,link,message,bt
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <!-- LOGO -->
               <tr>
-                  <td bgcolor="#292f43" align="center">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                  <td align="center">
+                      <table  bgcolor="#292f43" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                           <tr>
-                              <td align="center" valign="top" style="padding: 40px 10px 40px 10px;"> </td>
+                              <td align="center" valign="top" style="padding: 10px 10px 10px 10px;"> <img src=" https://ad51018e9536.ngrok.io/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
                           </tr>
                       </table>
                   </td>
               </tr>
               <tr>
-                  <td bgcolor="#292f43" align="center" style="padding: 0px 10px 0px 10px;">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                  <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                           <tr>
-                              <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
-                                  <h1 style="font-size: 38px; font-weight: 400; margin: 2;">${h1}</h1> <img src=" https://img.icons8.com/clouds/100/000000/handshake.png" width="125" height="120" style="display: block; border: 0px;" />
+                              <td bgcolor="#ffffff" align="center" valign="top" style="padding: 20px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
+                                  <h1 style="font-size: 28px; font-weight: 400; margin: 2;">${h1}</h1>
                               </td>
                           </tr>
                       </table>
@@ -352,7 +452,7 @@ exports.sendRegistrationMailMail = async (res,from,to,subject,h1,link,message,bt
               </tr>
               <tr>
                   <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                           <tr>
                               <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 40px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                                   <p style="margin: 0;">${message}. Just press the button below.<em><small> (This link expires in 1 hour.)</small></em></p>
@@ -401,7 +501,7 @@ exports.sendRegistrationMailMail = async (res,from,to,subject,h1,link,message,bt
               </tr>
               <tr>
                   <td bgcolor="#f4f4f4" align="center" style="padding: 30px 10px 0px 10px;">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                           <tr>
                               <td bgcolor="#FFECD1" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                                   <h2 style="font-size: 20px; font-weight: 400; color: #111111; margin: 0;">Need more help?</h2>
@@ -413,7 +513,7 @@ exports.sendRegistrationMailMail = async (res,from,to,subject,h1,link,message,bt
               </tr>
               <tr>
                   <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
-                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                           <tr>
                               <td bgcolor="#f4f4f4" align="left" style="padding: 0px 30px 30px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;"> <br>
                                   <hr />

@@ -68,7 +68,7 @@ exports.paymentController = (req, res) => {
                  PaymentsModel.create(payment).then(paymnt => {
                
                      
-              mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'Subscription.', `New subscription from ${user.firstname} ${user.lastname}`, `A payment of Ksh ${amount} has been made by the above named on behalf of ${req.user.organization}, as subscription fees for ${planname} plan. </p>
+              mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'Subscription.', `New subscription from ${user.firstname} ${user.lastname}`, `A payment of <strong>Ksh ${amount}</strong> has been made by the above named on behalf of <strong>${req.user.organization}</strong>, as subscription fees for <strong>${planname}</strong> plan. </p>
               <p>Mpesa code: <strong>${mpesaCode}</strong></p>
               <p>The payment is waiting your approval`,"A new subscription has been made.")
 
@@ -131,7 +131,7 @@ exports.updatePaymentStateController = (req, res) => {
                                 };
                                 await NotificationModel.create(notification);
 
-                          mail.sendMail(res,process.env.FROM, admin.email,'Subscription approved.', `Hello ${admin.firstname}, Welcome Onboard!.`, `Your subscription for ${plan.name} plan has been approved. It expires on ${ moment(nextpaymentDate).format('DD/MM/YYYY')}. </p>
+                          mail.sendMail(res,process.env.FROM, admin.email,'Subscription approved.', `Hello ${admin.firstname}, Welcome Onboard!.`, `Your subscription for <strong> ${plan.name} </strong>plan has been approved. It expires on ${ moment(nextpaymentDate).format('DD/MM/YYYY')}. </p>
                           <p>Thank you for chosing Rtech SMS.</p>`,"Subscription activated")
                                 res.json("payment approved successfully");
                              
@@ -183,7 +183,7 @@ exports.paymentCancelController =  (req, res) => {
                         type:'danger'
                         };
                         await NotificationModel.create(notification);
-                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of Ksh ${paymnt.amount} for ${paymnt.plan} plan has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for units has been rejected.")
+                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of<strong> Ksh ${paymnt.amount} </strong>for <strong>${paymnt.plan}</strong> plan has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for units has been rejected.")
                             res.json("payment saved successfully");
                  
                 })
@@ -218,7 +218,7 @@ exports.unitPaymentController = (req, res) => {
                 console.log("process.env.FROM :"+process.env.FROM)
             
                        
-                  mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'New units purchased.', `Payment from ${user.firstname} ${user.lastname}`, `A payment of Ksh ${amount} has been made by the above named on behalf of ${req.user.organization}, as payment for ${amount} units.</p>
+                  mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'New units purchased.', `Payment from ${user.firstname} ${user.lastname}`, `A payment of <strong>Ksh ${amount}</strong> has been made by the above named on behalf of <strong>${req.user.organization}</strong>, as payment for <strong>${amount}</strong> units.</p>
                   <p>Mpesa code: <strong>${mpesaCode}</strong></p>
                   <p>The payment is waiting your aproval.</p>`,"Units have ben purchased.")
                     res.json("payment saved successfully");
@@ -273,7 +273,7 @@ exports.unitPaymentUpdateController =  (req, res) => {
                         type:'success'
                         };
                         await NotificationModel.create(notification);
-                          mail.sendMail(res,process.env.FROM, user.email,'Payment approved.', `Payment Approved.`, `Your payment  for ${paymnt.amount} units has been approved. Enjoy sending sms using our system. <p>Thank you for doing business with us.</p>`,"Your payment for units have been approved.")
+                          mail.sendMail(res,process.env.FROM, user.email,'Payment approved.', `Payment Approved.`, `Your payment  for <strong>${paymnt.amount}</strong> units has been approved. Enjoy sending sms using our system. <p>Thank you for doing business with us.</p>`,"Your payment for units have been approved.")
                             res.json("payment saved successfully");
                         
                         
@@ -320,7 +320,7 @@ exports.unitPaymentCancelController =  (req, res) => {
                         };
                         await NotificationModel.create(notification);
                   
-                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment  for ${paymnt.amount} units has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for units have been rejected.")
+                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment  for <strong>${paymnt.amount}</strong> units has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for units have been rejected.")
                             res.json("payment saved successfully");
                  
                 })
@@ -357,7 +357,7 @@ exports.upgradeController = (req, res) => {
                  PaymentsModel.create(payment).then(paymnt => {
                
                      
-              mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'Upgrade request.', `New upgrade payment from ${user.firstname} ${user.lastname}`, `A payment of Ksh ${amount} has been made by the above named on behalf of ${req.user.organization}, as subscription upgrade fees to ${planname} plan. </p>
+              mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'Upgrade request.', `New upgrade payment from ${user.firstname} ${user.lastname}`, `A payment of <strong>Ksh ${amount}</strong> has been made by the above named on behalf of <strong>${req.user.organization}</strong>, as subscription upgrade fees to <strong>${planname}</strong> plan. </p>
               <p>Mpesa code: <strong>${mpesaCode}</strong></p>
               <p>The payment is waiting your approval`,"A new subscription has been made.")
 
@@ -426,7 +426,7 @@ exports.senderIdPaymentController = (req, res) => {
                  SenderIdPaymentModel.create(payment).then(() => {
                
                      
-              mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'SenderId Payment.', `${user.firstname} ${user.lastname}`, `A payment of Ksh ${amount} has been made by the above named on behalf of ${req.user.organization}, as fees for ${senderId} senderId for ${net}. </p>
+              mail.sendAdminMail(res,process.env.FROM, process.env.MAILERTESTTO,'SenderId Payment.', `${user.firstname} ${user.lastname}`, `A payment of <strong>Ksh ${amount}</strong> has been made by the above named on behalf of <strong>${req.user.organization}</strong>, as fees for <strong>${senderId} senderId </strong>for ${net}. </p>
               <p>Mpesa code: <strong>${mpesaCode}</strong></p>
               <p>The payment is waiting your approval`,"A new senderId request has been made.")
 
@@ -476,7 +476,7 @@ exports.updateSenderIdPaymentStateController = (req, res) => {
                            SenderIdModel.create(senderId)
                         .then(data => {
                           console.log("senderIds  saved: "+JSON.stringify(data));
-                          mail.sendMail(res,process.env.FROM, admin.email,'SenderId payment approved.', `Hello ${admin.firstname}.`, `Your payment for ${paymnt.senderId} senderId has been approved. We have initiated a request to safaricom to process your sender Id. It will be ready within the next seven days.</p>
+                          mail.sendMail(res,process.env.FROM, admin.email,'SenderId payment approved.', `Hello ${admin.firstname}.`, `Your payment for <strong>${paymnt.senderId}</strong> senderId has been approved. We have initiated a request to safaricom to process your sender Id. It will be ready within the next seven days.</p>
                           <p>Thank you for chosing Rtech SMS.</p>`,"Subscription activated")
                                 res.json("payment approved successfully. The sendeId has been created.");
                         })
@@ -527,7 +527,7 @@ exports.senderIdpaymentCancelController =  (req, res) => {
                    
                      const user= await UserModel.findOne({where: {organization : organizationObj.name, role:"admin"}});
                   
-                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of Ksh ${paymnt.amount} for ${paymnt.senderId} senderId has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for senderId has been rejected.")
+                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of <strong>Ksh ${paymnt.amount}</strong> for <strong>${paymnt.senderId}</strong> senderId has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for senderId has been rejected.")
                             res.json("payment saved successfully");
                  
                 })

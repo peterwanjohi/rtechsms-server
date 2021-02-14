@@ -12,8 +12,10 @@ const {
     changePasswordController,
     googleController,
     facebookController,
-    testMail
+    testMail,
+    
 } = require('../controllers/auth.controller')
+
 
 
 const {
@@ -25,6 +27,7 @@ const {
 } = require('../helpers/valid');
 const { requireSignin,adminMiddleware } = require('../controllers/auth.controller');
 router.get('/testmail', testMail);
+router.get('/sendmail', testMail);
 router.post('/register',  validSign, registerController)
 router.post('/add-user',requireSignin,adminMiddleware, validUser, registerUserController);
 

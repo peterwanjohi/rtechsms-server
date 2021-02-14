@@ -2,6 +2,8 @@ const db = require("../models");
 const PlanModel = db.plan;
 const Op = db.Sequelize.Op;
 const Sequelize = require("sequelize");
+const mail = require("../services/mail");
+
 
 exports.readAllController = (req, res) => {
 
@@ -23,6 +25,15 @@ exports.readController = (req, res) => {
         }
         res.json(plans);
     });
+};
+exports.sendMail = async (req, res) => {
+    const {from,subject,h1, message,hidden} = req.body;
+ let result = await mail.sendCustomMail(from,subject,h1, message,hidden);
+ console.log("Body: "+JSON.stringify(req.body))
+ console.log("Result: "+result)
+     res.json("Your message has been submitted successfully")
+ 
+
 };
 
 exports.readSingleController = (req, res) => {
