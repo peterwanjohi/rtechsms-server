@@ -198,6 +198,30 @@ exports.getMessageCount = async (req,res)=>{
       }
     
 }
+exports.getResultsForPieCount = async (req,res)=>{
+    let delivered =0;
+    let failed =0;
+    const messages = await MessageModel.findAll({
+        where:{status:"sent", organization: req.user.organization}});
+      if(!messages){
+          return res.json({"delivered":delivered, failed: failed});
+      }
+      else {
+      messages.forEach(message =>{
+          message.receipients.forEach(recipient=>{
+              if(recipient.statusCode == 101){
+                  delivered +=1;
+              }
+              else{
+                  failed +=1;
+              }
+          })
+      })
+
+      return res.json({"delivered":delivered, failed: failed});
+      }
+    
+}
 
 
 exports.readSingleController = (req, res) => {

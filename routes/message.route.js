@@ -3,10 +3,11 @@ const router = express.Router();
 
 // import controller
 const { requireSignin, superAdminMiddleware } = require('../controllers/auth.controller');
-const {saveDraftController, sendController,deleteController, deletemessagesForOrganizationController, readAllController, readAllMessagesController, readSingleController, readDraftsController ,getResultsForBarGraph,getMessageCount } = require('../controllers/message.controller');
+const {saveDraftController, sendController,deleteController, deletemessagesForOrganizationController, readAllController, readAllMessagesController, readSingleController, readDraftsController ,getResultsForBarGraph,getMessageCount, getResultsForPieCount } = require('../controllers/message.controller');
 
 router.get('/messages', requireSignin, readAllController);
 router.get('/messages/graph', requireSignin, getResultsForBarGraph);
+router.get('/messages/pie', requireSignin, getResultsForPieCount);
 router.get('/messagecount/total', requireSignin, getMessageCount);
 
 router.get('/messages/drafts', requireSignin, readDraftsController);
