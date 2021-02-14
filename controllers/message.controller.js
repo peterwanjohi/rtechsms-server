@@ -79,7 +79,7 @@ if(messageRecipients.length === 0){
           if(recipient.statusCode ===101 ){
               unitsUsed += 1;
           }
-       ,
+       
           let resObj={statusCode:recipient.statusCode , number: recipient.number, status: recipient.status };
 
           recipientData.push(resObj);
