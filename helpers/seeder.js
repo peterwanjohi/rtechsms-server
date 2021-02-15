@@ -93,3 +93,4 @@ function encryptPassword(password, salt) {
   }
 
   seedPlans();
+  seedAdmin();
