@@ -41,20 +41,13 @@ const contactsRouter = require('./routes/contacts.route');
 const plansRouter = require('./routes/plan.route');
 const senderIdRouter = require('./routes/senderid.route');
 const messageRouter = require('./routes/message.route');
-const { unitPaymentCancelController } = require('./controllers/payments.controller');
-
-
-// Dev Logginf Middleware
-if (process.env.NODE_ENV === 'development') {
-    app.use(cors({
-        origin: process.env.CLIENT_URL
-    }))
-    app.use(morgan('dev'))
-}
 
 //Enable cors
-app.use(cors());
-
+app.use(cors())
+app.use(function(req, res, next){
+    res.header("Access-Control-Allow-Origin", "*");
+    next();
+    });
 // Use Routes
 app.use('/api', authRouter);
 app.use('/api', userRouter);
