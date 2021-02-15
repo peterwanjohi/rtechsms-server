@@ -224,7 +224,7 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
 
     var mailOptions ={
       from: process.env.FROM,
-      to: "peterwanjohi143@gmail.com",//process.env.MAILERTESTTO,
+      to: process.env.MAILERTESTTO,//process.env.MAILERTESTTO,
       subject: subject+" from "+from,
       html:`
       <!DOCTYPE html>
