@@ -130,7 +130,7 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
                       <td bgcolor="#292f43" align="center">
                           <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                               <tr>
-                              <td align="center" valign="top" style="padding: 10px 10px 40px 10px;"> <img src=" https://ad51018e9536.ngrok.io/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
+                              <td align="center" valign="top" style="padding: 10px 10px 40px 10px;"> <img src="https://rtechsms.com/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
                               </tr>
                           </table>
                       </td>
@@ -240,7 +240,7 @@ exports.sendMail = async (res,from,to,subject,h1, message,hidden) => {
               <td align="center">
               <table  bgcolor="#292f43" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                   <tr>
-                      <td align="center" valign="top" style="padding: 10px 10px 40px 10px;"> <img src=" https://ad51018e9536.ngrok.io/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
+                      <td align="center" valign="top" style="padding: 10px 10px 40px 10px;"> <img src="https://rtechsms.com/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
                   </tr>
               </table>
           </td>
@@ -343,7 +343,7 @@ return false;
               <td align="center">
               <table  bgcolor="#292f43" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                   <tr>
-                      <td align="center" valign="top" style="padding: 10px 10px 40px 10px;"> <img src=" https://ad51018e9536.ngrok.io/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
+                      <td align="center" valign="top" style="padding: 10px 10px 40px 10px;"> <img src="https://rtechsms.com/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
                   </tr>
               </table>
           </td>
@@ -434,7 +434,7 @@ exports.sendRegistrationMailMail = async (res,from,to,subject,h1,link,message,bt
                   <td align="center">
                       <table  bgcolor="#292f43" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
                           <tr>
-                              <td align="center" valign="top" style="padding: 10px 10px 10px 10px;"> <img src=" https://ad51018e9536.ngrok.io/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
+                              <td align="center" valign="top" style="padding: 10px 10px 10px 10px;"> <img src="https://rtechsms.com/logo.png" width="125" height="120" style="display: block; border: 0px;" /></td>
                           </tr>
                       </table>
                   </td>

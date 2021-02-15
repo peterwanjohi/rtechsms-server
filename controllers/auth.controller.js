@@ -64,7 +64,7 @@ exports.registerController = async (req, res) => {
       }
     );
 
-    mail.sendRegistrationMailMail(res, process.env.FROM, email,"Account activation","Account activation link.",`${process.env.CLIENT_URL}/activate/${token}`,`Hello ${firstname}. We're excited to have you on board. First, you need to verify your account`,"Activate Account","We're thrilled to have you here! Get ready to dive into your new account.");
+    mail.sendRegistrationMailMail(res, process.env.FROM, email,"Account activation Link","Account activation link.",`${process.env.CLIENT_URL}/activate/${token}`,`Hello ${firstname}. We're excited to have you on board. First, you need to verify your account`,"Activate Account","We're thrilled to have you here! Get ready to dive into your new account.");
 
           return res.json({
             message: `A verification email has been sent to ${email}`
@@ -207,7 +207,7 @@ exports.activationController = (req, res) => {
           };
           await NotificationModel.create(notification);
 
-        mail.sendMail(res,process.env.FROM, email,'Temporaly password.', `Hello <strong>${user.firstname}</strong>, Welcome Onboard!.`, `Your new account has been succesfully activated. Thank you for choosing Rtech Sms.</p>
+        mail.sendMail(res,process.env.FROM, email,'Account Activated.', `Hello <strong>${user.firstname}</strong>, Welcome Onboard!.`, `Your new account has been succesfully activated. Thank you for choosing Rtech Sms.</p>
       `," Rtech SMS account activated.");
             return res.json({
                   success: true,
