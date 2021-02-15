@@ -15,12 +15,18 @@ exports.sendController = async (req, res) => {
     const organization = req.user.organization;
     let sender = 'RTECHSMS';
  const org = await organizationModel.findOne({where:{name: organization}});
- if((org.plan != "Free Plan" || (org.plan == "Free Plan" && org.sent_messages >= 2)) && !org.senderId){
+ if(org.plan !== "Free Plan" && !org.senderId){
      return res.status(400).json({
         success: false,
         errors:"You must have a valid senderId to send messages."
       });  
  }
+ if(org.plan === "Free Plan" && org.sent_messages === 2 && !org.senderId){
+    return res.status(400).json({
+       success: false,
+       errors:"You must have a valid senderId to send messages."
+     });  
+}
  if(org.senderId){
      sender = org.senderId;
  }
