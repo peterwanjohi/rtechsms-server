@@ -1,7 +1,5 @@
 const db = require("../models");
 const MessageModel = db.message;
-const Op = db.Sequelize.Op;
-const Sequelize = require("sequelize");
 const sms = require('../services/sms');
 const fetch = require("node-fetch");
 const organizationModel = db.organization;
@@ -15,12 +13,12 @@ exports.sendController = async (req, res) => {
     const organization = req.user.organization;
     let sender = 'RTECHSMS';
  const org = await organizationModel.findOne({where:{name: organization}});
- if(org.sent_messages >= 2 && !org.senderId){
-     return res.status(400).json({
-        success: false,
-        errors:"You must have a valid senderId to send messages."
-      });  
- }
+//  if(org.sent_messages >= 2 && !org.senderId){
+//      return res.status(400).json({
+//         success: false,
+//         errors:"You must have a valid senderId to send messages."
+//       });  
+//  }
  if(org.plan === "Free Plan" && org.sent_messages >= 2 && !org.senderId){
     return res.status(400).json({
        success: false,
@@ -33,8 +31,10 @@ exports.sendController = async (req, res) => {
 
  const country = org.country;
  if(!country){
-  return  res.json("You have not a country for your organization.")
- }
+    return res.status(400).json({
+        success: false,
+        errors:"You have not set a country for your organization."
+      }); }
 let numbers =[];
 await fetch("https://restcountries.eu/rest/v2/name/"+country.toLowerCase()).then(resp=>{
   return resp.json();
@@ -60,7 +60,12 @@ if(orgUnits < clients){
       });  
 }
  else{
-    console.log(" org > cli", orgUnits > clients)
+    if(org.sent_messages >= 2 && !org.senderId){
+        return res.status(400).json({
+           success: false,
+           errors:"You must have a valid senderId to send messages."
+         });  
+    }
     const options = {
         to: numbers,
         message: message,
