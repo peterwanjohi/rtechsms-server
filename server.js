@@ -43,11 +43,20 @@ const senderIdRouter = require('./routes/senderid.route');
 const messageRouter = require('./routes/message.route');
 
 //Enable cors
-app.use(cors())
-app.use(function(req, res, next){
-    res.header("Access-Control-Allow-Origin", "*");
-    next();
-    });
+// app.use(cors())
+// app.use(function(req, res, next){
+//     res.header("Access-Control-Allow-Origin", "*");
+//     next();
+//     });
+app.use(
+  cors({
+    allowedHeaders: ["authorization", "Content-Type"], // you can change the headers
+    exposedHeaders: ["authorization"], // you can change the headers
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false
+  })
+);
 // Use Routes
 app.use('/api', authRouter);
 app.use('/api', userRouter);
