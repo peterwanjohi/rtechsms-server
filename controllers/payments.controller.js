@@ -23,9 +23,91 @@ exports.readController = (req, res) => {
     });
 };
 
+exports.readAllPendingController = (req, res) => {
+    PaymentsModel.findAll({where:{state: "pending"},order: [
+        ['createdAt', 'DESC']
+        ]}).then((payments) => {
+        if ( !payments) {
+            return res.status(400).json({
+                error: 'No pending payments found.'
+            });
+        };
+
+        res.json(payments);
+    });
+};
+
+exports.readAllCompleteUnitPaymentsController = (req, res) => {
+    UnitPaymentsModel.findAll({where:{state: "complete"},order: [
+        ['createdAt', 'DESC']
+        ]}).then((payments) => {
+        if ( !payments) {
+            return res.status(400).json({
+                error: 'No complete payments found.'
+            });
+        };
+
+        res.json(payments);
+    });
+};
+exports.readAllPendingUnitPaymentsController = (req, res) => {
+    UnitPaymentsModel.findAll({where:{state: "pending"},order: [
+        ['createdAt', 'DESC']
+        ]}).then((payments) => {
+        if ( !payments) {
+            return res.status(400).json({
+                error: 'No pending payments found.'
+            });
+        };
+
+        res.json(payments);
+    });
+};
+exports.readAllPendingSenderIdPaymentsController = (req, res) => {
+    SenderIdPaymentModel.findAll({where:{state: "pending"},order: [
+        ['createdAt', 'DESC']
+        ]}).then((payments) => {
+        if ( !payments) {
+            return res.status(400).json({
+                error: 'No pending payments found.'
+            });
+        };
+
+        res.json(payments);
+    });
+};
+
+exports.readAllCompleteSenderIdPaymentsController = (req, res) => {
+    SenderIdPaymentModel.findAll({where:{state: "complete"},order: [
+        ['createdAt', 'DESC']
+        ]}).then((payments) => {
+        if ( !payments) {
+            return res.status(400).json({
+                error: 'No complete payments found.'
+            });
+        };
+
+        res.json(payments);
+    });
+};
+exports.readAllCompleteController = (req, res) => {
+    PaymentsModel.findAll({where:{state: "complete"},order: [
+        ['createdAt', 'DESC']
+        ]}).then((payments) => {
+        if ( !payments) {
+            return res.status(400).json({
+                error: 'No complete payments found.'
+            });
+        };
+
+        res.json(payments);
+    });
+};
 exports.readAllController = (req, res) => {
     const organization = req.user.organization;
-    PaymentsModel.findAll({where:{organization: organization}}).then((payments) => {
+    PaymentsModel.findAll({where:{organization: organization},order: [
+        ['createdAt', 'DESC']
+        ]}).then((payments) => {
         if ( !payments) {
             return res.status(400).json({
                 error: 'No Payments made.'
@@ -123,11 +205,11 @@ exports.updatePaymentStateController = (req, res) => {
                         }
                         organizationObject.update(updatedOrganization).then(async () => {   
                             const notification = {
-                                message: `Dear ${admin.firstname}, Your payment of Ksh ${paymnt.amount} for ${plan.name} has been approved.`,
+                                message: `Dear ${admin.firstname}, Your payment of Ksh ${paymnt.amount} for ${plan.name} plan has been approved.`,
                                 read: false,
                                 seen: false,
                                 receipient: admin.id,
-                                type:'success'
+                                type:'Payment Approval'
                                 };
                                 await NotificationModel.create(notification);
 
@@ -176,11 +258,11 @@ exports.paymentCancelController =  (req, res) => {
                    
                      const user= await UserModel.findOne({where: {organization : organizationObj.name, role:"admin"}});
                      const notification = {
-                        message: `Dear ${user.firstname}. Your payment of Ksh ${paymnt.amount} for ${paymnt.plan} has been rejected!`,
+                        message: `Dear ${user.firstname}. Your payment of Ksh ${paymnt.amount} for ${paymnt.plan} plan has been rejected!`,
                         read: false,
                         seen: false,
                         receipient: user.id,
-                        type:'danger'
+                        type:'Payment rejected'
                         };
                         await NotificationModel.create(notification);
                           mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of<strong> Ksh ${paymnt.amount} </strong>for <strong>${paymnt.plan}</strong> plan has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for units has been rejected.")
@@ -270,7 +352,7 @@ exports.unitPaymentUpdateController =  (req, res) => {
                         read: false,
                         seen: false,
                         receipient: user.id,
-                        type:'success'
+                        type:'Units Approved'
                         };
                         await NotificationModel.create(notification);
                           mail.sendMail(res,process.env.FROM, user.email,'Payment approved.', `Payment Approved.`, `Your payment  for <strong>${paymnt.amount}</strong> units has been approved. Enjoy sending sms using our system. <p>Thank you for doing business with us.</p>`,"Your payment for units have been approved.")
@@ -316,7 +398,7 @@ exports.unitPaymentCancelController =  (req, res) => {
                         read: false,
                         seen: false,
                         receipient: user.id,
-                        type:'danger'
+                        type:'Units Rejected'
                         };
                         await NotificationModel.create(notification);
                   
@@ -474,8 +556,16 @@ exports.updateSenderIdPaymentStateController = (req, res) => {
                            };
                    
                            SenderIdModel.create(senderId)
-                        .then(data => {
-                          console.log("senderIds  saved: "+JSON.stringify(data));
+                        .then(async data => {
+                            const notification = {
+                                message: `Dear ${admin.firstname}. Your payment for ${paymnt.senderId} senderId has been approved.`,
+                                read: false,
+                                seen: false,
+                                receipient: admin.id,
+                                type:'SenderId Payment Approved'
+                                };
+                                await NotificationModel.create(notification);
+
                           mail.sendMail(res,process.env.FROM, admin.email,'SenderId payment approved.', `Hello ${admin.firstname}.`, `Your payment for <strong>${paymnt.senderId}</strong> senderId has been approved. We have initiated a request to safaricom to process your sender Id. It will be ready within the next seven days.</p>
                           <p>Thank you for chosing Rtech SMS.</p>`,"Subscription activated")
                                 res.json("payment approved successfully. The sendeId has been created.");
@@ -525,9 +615,16 @@ exports.senderIdpaymentCancelController =  (req, res) => {
 
                 paymnt.update(payment).then(async ()=>{
                    
-                     const user= await UserModel.findOne({where: {organization : organizationObj.name, role:"admin"}});
-                  
-                          mail.sendMail(res,process.env.FROM, user.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of <strong>Ksh ${paymnt.amount}</strong> for <strong>${paymnt.senderId}</strong> senderId has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for senderId has been rejected.")
+                     const admin= await UserModel.findOne({where: {organization : organizationObj.name, role:"admin"}});
+                         const notification = {
+                                message: `Dear ${admin.firstname}. Your payment for ${paymnt.senderId} senderId has been rejected.`,
+                                read: false,
+                                seen: false,
+                                receipient: admin.id,
+                                type:'SenderId Payment Rejected'
+                                };
+                                await NotificationModel.create(notification);
+                          mail.sendMail(res,process.env.FROM, admin.email,'Payment Rejected.', `Payment Rejected.`, `Your payment of <strong>Ksh ${paymnt.amount}</strong> for <strong>${paymnt.senderId}</strong> senderId has been rejected. Please check if the Mpesa Confirmation code you sent is correct.</p>`,"Your payment for senderId has been rejected.")
                             res.json("payment saved successfully");
                  
                 })

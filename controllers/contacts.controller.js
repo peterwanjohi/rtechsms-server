@@ -7,7 +7,9 @@ exports.readContactsController = (req, res) => {
     const orgname = req.user.organization;
     console.log("req.user")
 
-    ContactListModel.findAll({where:{organization: orgname}}).then(contacts => {
+    ContactListModel.findAll({where:{organization: orgname},order: [
+        ['createdAt', 'DESC']
+        ]}).then(contacts => {
         if (!contacts) {
             return res.status(400).json({
                 error: 'organization not found'

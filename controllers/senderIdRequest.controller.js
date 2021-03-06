@@ -6,7 +6,9 @@ const NotificationModel = db.notification;
 
 const mail = require("../services/mail");
 exports.readAllController = (req, res) => {
-    SenderIdModel.findAll().then(senderIds => {
+    SenderIdModel.findAll({order: [
+        ['createdAt', 'DESC']
+        ]}).then(senderIds => {
         if (!senderIds) {
             return res.json([]);
         }

@@ -41,6 +41,7 @@ const contactsRouter = require('./routes/contacts.route');
 const plansRouter = require('./routes/plan.route');
 const senderIdRouter = require('./routes/senderid.route');
 const messageRouter = require('./routes/message.route');
+const notificationRouter = require('./routes/notification.route');
 
 //Enable cors
 app.use(cors({origin: true}))
@@ -53,6 +54,8 @@ app.use('/api', contactsRouter);
 app.use('/api', plansRouter);
 app.use('/api', senderIdRouter);
 app.use('/api', messageRouter);
+app.use('/api', notificationRouter);
+
 
 app.use((req, res) => {
     res.status(404).json({
@@ -66,7 +69,7 @@ const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
 });
-cron.schedule('* * * * *',  async function (req, res, next) {
+cron.schedule('0 0 0 * * *',  async function (req, res, next) {
     let today_date = moment(new Date()).format("YYYY-MM-DD hh:mm");
     const find_organizations = await OrganizationModel.findAll();
     if (find_organizations) {
@@ -82,22 +85,20 @@ cron.schedule('* * * * *',  async function (req, res, next) {
                 const days=moment().diff(organizations.next_payment_date,"days");
                 const days_remaining=  Math.abs( days)
                 if(days < 0 && days > -7){
-                    console.log("hehe")
                     const notification={
                         message: `Dear ${admin.firstname}, your subscription expires in ${days_remaining} days.`,
                     read: false,
                     seen: false,
                     receipient: admin.id,
-                    type:'danger'
+                    type:'Expiry Message'
                     };
                     await NotificationModel.create(notification);
-                    console.log("message: "+notification.message)
                 }
               
                 if (today_date === paymentdueDate){
-                   
                     const updated_organization ={
-                        is_paid: false
+                        is_paid: false,
+                        status:'expired'
                     }
                     await find_organization.update(updated_organization);
                 }

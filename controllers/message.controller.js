@@ -3,6 +3,7 @@ const MessageModel = db.message;
 const sms = require('../services/sms');
 const fetch = require("node-fetch");
 const organizationModel = db.organization;
+const NotificationModel = db.notification;
 var PhoneNumber = require( 'awesome-phonenumber' );
 var _ = require('lodash');
 const moment = require('moment');
@@ -11,14 +12,12 @@ exports.sendController = async (req, res) => {
     const {message, receipients, draftId} =req.body;
 
     const organization = req.user.organization;
+    const name= req.user.firstname;
+    console.log("USERS +>", JSON.stringify(req.user))
+    console.log("Name +>", name)
     let sender = 'RTECHSMS';
  const org = await organizationModel.findOne({where:{name: organization}});
-//  if(org.sent_messages >= 2 && !org.senderId){
-//      return res.status(400).json({
-//         success: false,
-//         errors:"You must have a valid senderId to send messages."
-//       });  
-//  }
+
  if(org.plan === "Free Plan" && org.sent_messages >= 2 && !org.senderId){
     return res.status(400).json({
        success: false,
@@ -53,7 +52,6 @@ const sent_messages= org.sent_messages;
 const clients = numbers.length;
 
 if(orgUnits < clients){
-    console.log(" org < cli", orgUnits <clients)
     return res.status(400).json({
         success: false,
         errors:"Your unit balance is too low to send the message to "+clients +" members. Please purchase more units and try  again."
@@ -73,7 +71,6 @@ if(orgUnits < clients){
     }
     sms.send(options)
         .then( async response => {
-       console.log("Response: "+JSON.stringify(response))
       const rs =  response.SMSMessageData;
       const messageRecipients = rs.Recipients;
              console.log("messageRecipients.length: "+messageRecipients.length)
@@ -95,7 +92,6 @@ if(messageRecipients.length === 0){
 
           recipientData.push(resObj);
       });
-      console.log("Units Used: "+unitsUsed)
       const unitsupdate = orgUnits - unitsUsed;
       const updateMessages = sent_messages +1;
 
@@ -108,16 +104,40 @@ if(messageRecipients.length === 0){
         status: 'sent'
     }
     MessageModel.create(Message).then(async () => {
+        console.log("User =>",JSON.stringify(req.user))
         if(draftId){
         await updateDraft(draftId, organization);
+
+        const notification = {
+            message: `Dear ${name}. Your Message: ${message} has been sent .`,
+            read: false,
+            seen: false,
+            receipient: req.user.id,
+            type:'Message Sent'
+            };
+            await NotificationModel.create(notification);
+
         return res.json("Your message hass been sent successfully");
         }
+        const notification = {
+            message: `Dear ${name}. Your Message: '${message}' has been sent .`,
+            read: false,
+            seen: false,
+            receipient: req.user.id,
+            type:'Message Sent'
+            };
+            await NotificationModel.create(notification);
        return res.json("Mesage sent successfully");
     })
-    .catch(err => {
-        // return res.status(400).json({
-        //     error: 'Error saving draft.'
-        // });
+    .catch(async err => {
+        const notification = {
+            message: `Dear ${name}. Your Message: '${message}' has not been sent .`,
+            read: false,
+            seen: false,
+            receipient: req.user.id,
+            type:'Message Failed'
+            };
+            await NotificationModel.create(notification);
     });
         })
         .catch( error => {
@@ -152,7 +172,12 @@ exports.saveDraftController = (req, res) => {
 exports.readAllController = (req, res) => {
 const organization = req.user.organization;
 
-    MessageModel.findAll({where: {organization: organization, status: 'sent' }}).then(messages => {
+    MessageModel.findAll({
+        where: {organization: organization, status: 'sent' },
+        order: [
+        ['createdAt', 'DESC']
+        ]
+  }).then(messages => {
         if (!messages) {
             return res.json([]);
         }

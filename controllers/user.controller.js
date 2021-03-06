@@ -20,6 +20,17 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage }).single('file');
 
+exports.readAllUsersController = (req, res) => {
+    UserModel.findAll().then(( users) => {
+        if ( !users) {
+            return res.status(400).json({
+                error: 'No users found'
+            });
+        }
+        res.json(users);
+    });
+};
+
 exports.readController = (req, res) => {
     const userId = req.params.id;
     UserModel.findByPk(userId).then(( user) => {

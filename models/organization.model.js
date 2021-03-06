@@ -49,6 +49,11 @@ module.exports = (sequelize, Sequelize) => {
             type:Sequelize.STRING,
             defaultvalue:null
         },
+        status:{
+          type:Sequelize.STRING,
+          allowNull: false,
+          defaultvalue:'active'
+        },
         senderId:{
             type:Sequelize.STRING,
             defaultvalue:null

@@ -123,7 +123,7 @@ exports.registerUserController = (req, res) => {
         read: false,
         seen: false,
         receipient: user.id,
-        type:'success'
+        type:'Welcome'
         };
         await NotificationModel.create(notification);
 
@@ -169,6 +169,7 @@ exports.activationController = (req, res) => {
          is_paid:false,
          plan:null,
          senderId:null,
+         status:'active',
          plan:"Free Trial",
          next_payment_date: nextpaymentDate
         };
@@ -177,9 +178,7 @@ exports.activationController = (req, res) => {
        .then(organization=>{
          if(!organization){
           OrganizationModel.create(org).then(()=>{
-            console.log("Saved org")
           }).catch(err=>{
-            console.log("Error saving org: "+err)
           });
          }
        })
@@ -203,7 +202,7 @@ exports.activationController = (req, res) => {
           read: false,
           seen: false,
           receipient: user.id,
-          type:'success'
+          type:'Welcome'
           };
           await NotificationModel.create(notification);
 
@@ -229,9 +228,11 @@ exports.activationController = (req, res) => {
       }
     });
   } else {
-    return res.json({
-      message: 'There is no activation token!!'
+    return res.status(400).json({
+      success: false,
+      errors:"There is no activation token!!."
     });
+    
   }
 };
 
@@ -241,6 +242,7 @@ exports.signinController = async (req, res) => {
   if (!errors.isEmpty()) {
     const firstError = errors.array().map(error => error.msg)[0];
     return res.status(422).json({
+      success:false,
       errors: firstError
     });
   } 
@@ -248,11 +250,13 @@ exports.signinController = async (req, res) => {
    UserModel.findOne({where:{ email:email } }).then(async (user) => {
       if (!user) {
         return res.status(400).json({
+          success:false,
           errors: 'User with that email does not exist. Please signup'
         });
       }
       if(!user.isActive){
         return res.status(400).json({
+          success:false,
           errors: 'Your account is not activated. Kindly follow the link sent to your mail to activate!'
         });
       }
@@ -261,6 +265,7 @@ exports.signinController = async (req, res) => {
       let hashed_password = user.hashed_password;
       if (!authenticate(password, salt, hashed_password)) {
         return res.status(400).json({
+          success:false,
           errors: 'Email and password do not match'
         });
       }
@@ -268,7 +273,7 @@ exports.signinController = async (req, res) => {
       // generate a token and send to client
       const token = jwt.sign(
         {
-          id: user.id, organization: user.organization,role: user.role
+          id: user.id, organization: user.organization,role: user.role,firstname:user.firstname
         },
         process.env.JWT_SECRET,
         {
@@ -352,6 +357,7 @@ exports.forgotPasswordController = (req, res) => {
       .then( user => {
         if ( !user) {
           return res.status(400).json({
+            success:false,
             error: 'User with that email does not exist'
           });
         }
@@ -374,6 +380,7 @@ exports.forgotPasswordController = (req, res) => {
           }).then(() => {
             mail.sendRegistrationMailMail(res, process.env.FROM, email,"Password Reset","Password Reset link.",`${process.env.CLIENT_URL}/reset-password/${token}`,`Hello <strong>${user.firstname}</strong>. You have requested to reset your password.`,"Reset Password","Password reset link.");
             return res.json({
+              success:true,
               message: `An email has been sent to ${email}. Follow the instruction to reset your password.`
             });
       
@@ -381,7 +388,8 @@ exports.forgotPasswordController = (req, res) => {
             .catch(err=>{
               console.log('Reset pass  EMAIL SENT ERROR', err);
               return res.json({
-                message: err.message
+                success:false,
+                errors: err.message
               });
             
           })
@@ -408,7 +416,8 @@ exports.resetPasswordController = (req, res) => {
       ) {
         if (err) {
           return res.status(400).json({
-            error: 'Expired link. Try again'
+            success:false,
+            errors: 'Expired link. Try again'
           });
         }
        
@@ -420,7 +429,8 @@ exports.resetPasswordController = (req, res) => {
          .then( user => {
             if (!user) {
               return res.status(400).json({
-                error: 'Error resseting password. Try later'
+                success:false,
+                errors: 'Error resseting password. Try later'
               });
             }
             let hashed_passwordObj = hashPassword(newPassword);
@@ -436,7 +446,7 @@ exports.resetPasswordController = (req, res) => {
                 read: false,
                 seen: false,
                 receipient: user.id,
-                type:'success'
+                type:'Password Changed'
                 };
             
               res.json({
@@ -444,7 +454,8 @@ exports.resetPasswordController = (req, res) => {
               });
             }).catch(er =>{
               return res.status(400).json({
-                error: 'Error resetting user password'
+                success:false,
+                errors: 'Error resetting user password'
               });
             });
         
@@ -485,7 +496,8 @@ exports.changePasswordController = (req, res) => {
               });
             }).catch(er =>{
               return res.status(400).json({
-                error: 'Error changing password'
+                success:false,
+                errors: 'Error changing password'
               });
             });
         

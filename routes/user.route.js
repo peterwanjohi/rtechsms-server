@@ -2,11 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 // import controller
-const { requireSignin, adminMiddleware } = require('../controllers/auth.controller');
-const { readController,readAllController, updateController,updateUserController,updateavatarController,deleteController } = require('../controllers/user.controller');
+const { requireSignin, adminMiddleware, superAdminMiddleware } = require('../controllers/auth.controller');
+const { readController,readAllController, readAllUsersController,updateController,updateUserController,updateavatarController,deleteController } = require('../controllers/user.controller');
 
 router.get('/user/:id', requireSignin, readController);
 router.get('/users/all', requireSignin,adminMiddleware, readAllController);
+router.get('/users/allusers', requireSignin,superAdminMiddleware, readAllUsersController);
+
 router.put('/user/update', requireSignin, updateController);
 router.put('/user/updateuser', requireSignin, adminMiddleware, updateUserController);
 router.post('/user/update-avatar', requireSignin, updateavatarController);

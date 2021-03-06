@@ -55,6 +55,16 @@ exports.readOrganizationPayStatus = (req, res) => {
     });
 };
 
+exports.readOrganizationStatus = (req, res) => {
+    const orgname = req.user.organization;
+    OrganizationModel.findOne({where:{name: orgname}}).then(organization => {
+        if (!organization) {
+            return res.json([]);
+        }
+        res.json({status: organization.status,plan:organization.plan});
+    });
+};
+
 exports.updateController = (req, res) => {
     const { name,address,city,country, motto, } = req.body;
     const orgname = req.user.organization;
@@ -121,7 +131,7 @@ UserModel.findAll({where: {organization:organization.name}}).then( users=>{
                 read: false,
                 seen: false,
                 receipient: req.user.id,
-                type:'primary'
+                type:'Organization Details Updated'
                 };
                 await NotificationModel.create(notification);
               
