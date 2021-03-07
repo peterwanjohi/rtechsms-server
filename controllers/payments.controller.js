@@ -12,7 +12,9 @@ const NotificationModel = db.notification;
 
 exports.readController = (req, res) => {
     const organization = req.user.organization;
-    PaymentsModel.findOne({where:{organization: organization}}).then((payment) => {
+    PaymentsModel.findOne({where:{organization: organization},order: [
+        ['createdAt', 'DESC']
+        ]}).then((payment) => {
         if ( !payment) {
             return res.status(400).json({
                 error: 'Payment not found'

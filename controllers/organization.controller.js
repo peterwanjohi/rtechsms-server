@@ -64,7 +64,29 @@ exports.readOrganizationStatus = (req, res) => {
         res.json({status: organization.status,plan:organization.plan});
     });
 };
+exports.getResultsForPieCount = async (req,res)=>{
+    let paid =0;
+    let npaid =0;
+    const organizations = await OrganizationModel.findAll({
+        where:{is_paid:true}});
+      if(!organizations){
+          return res.json({"paid":paid, npaid: npaid});
+      }
+      else {
+      organizations.forEach(organization =>{
+              if(organization.is_paid){
+                  paid +=1;
+              }
+              else{
+                  npaid +=1;
+              }
+          
+      })
 
+      return res.json({"paid":paid, npaid: npaid});
+      }
+    
+}
 exports.updateController = (req, res) => {
     const { name,address,city,country, motto, } = req.body;
     const orgname = req.user.organization;
@@ -127,7 +149,7 @@ UserModel.findAll({where: {organization:organization.name}}).then( users=>{
                 }
               );
               const notification = {
-                message: `Dear ${req.user.firstname}. Your organization details have been updated.`,
+                organization: `Dear ${req.user.firstname}. Your organization details have been updated.`,
                 read: false,
                 seen: false,
                 receipient: req.user.id,

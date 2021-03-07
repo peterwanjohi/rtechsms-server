@@ -8,7 +8,8 @@ const {
     updateLogoController,
     readOrganizationPayStatus,
     readAllOrganizationController,
-    readOrganizationStatus
+    readOrganizationStatus,
+    getResultsForPieCount
 } = require('../controllers/organization.controller');
 
 const {
@@ -19,6 +20,7 @@ const { readAllController } = require('../controllers/user.controller');
 
 router.get('/organization',  requireSignin, readOrganizationController);
 router.get('/organizations/all',  requireSignin,superAdminMiddleware, readAllOrganizationController);
+router.get('/organizations/getResultsForPie',  requireSignin,superAdminMiddleware, getResultsForPieCount);
 
 router.get('/organization/users',  requireSignin, readAllController);
 router.get('/organization/paymentstatus',  requireSignin, readOrganizationPayStatus);

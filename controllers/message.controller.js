@@ -13,8 +13,6 @@ exports.sendController = async (req, res) => {
 
     const organization = req.user.organization;
     const name= req.user.firstname;
-    console.log("USERS +>", JSON.stringify(req.user))
-    console.log("Name +>", name)
     let sender = 'RTECHSMS';
  const org = await organizationModel.findOne({where:{name: organization}});
 

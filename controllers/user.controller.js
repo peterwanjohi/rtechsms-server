@@ -3,7 +3,7 @@ const UserModel = db.auth;
 var multer = require('multer')
 const fs = require("fs");
 const Op = db.Sequelize.Op;
-
+const moment = require('moment');
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
       const  id  = req.user.id;
@@ -21,7 +21,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).single('file');
 
 exports.readAllUsersController = (req, res) => {
-    UserModel.findAll().then(( users) => {
+    UserModel.findAll({where:{role:{ [Op.ne]: "superadmin"}}}).then(( users) => {
         if ( !users) {
             return res.status(400).json({
                 error: 'No users found'
@@ -227,3 +227,28 @@ exports.deleteController = (req, res) => {
        
     });
 };
+
+exports.getResultsForBarGraph =async (req, res)=>{
+    
+    const users = await UserModel.findAll({
+        where:{role:{ [Op.ne]: "superadmin"}},
+    group: 'createdAt'
+      });
+      if(!users){
+          return res.json([]);
+      }
+                        var result = users.reduce(function (r, a) {
+                            r[moment(a.createdAt, 'YYYY/MM/DD').format('M')] = r[moment(a.createdAt, 'YYYY/MM/DD').format('M')] || [];
+                            r[moment(a.createdAt, 'YYYY/MM/DD').format('M')].push(a);
+                            return r;
+                        }, Object.create(null));
+                    
+                    let graphRes ={};
+                    let arrayForGraphs=[];
+                    let keys= Object.keys(result);
+                    keys.forEach(key =>{
+                         graphRes[key] = result[key].length;
+                         arrayForGraphs.push(graphRes)
+                    })
+                   return res.json(arrayForGraphs);
+}
