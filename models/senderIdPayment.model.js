@@ -25,6 +25,12 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING ,
         allowNull: false,
       },
+      mpesaCode:
+      {
+        type: Sequelize.STRING ,
+        allowNull: false,
+        
+      },
       state: {
         type: Sequelize.STRING ,
         allowNull: false,
